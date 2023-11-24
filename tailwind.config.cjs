@@ -9,7 +9,7 @@ module.exports = {
           DEFAULT: '#F3F4F1',
         },
 				black: {
-					DEFAULT: '#131410',
+					DEFAULT: '#111010',
 				}
 			}
     },
