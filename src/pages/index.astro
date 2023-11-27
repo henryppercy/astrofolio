@@ -9,14 +9,14 @@ const posts = await getCollection('post');
 		<section class="space-y-5 prose prose-stone dark:prose-invert">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Henry</h1>
 			<p>Junior Software Developer <span class="text-black dark:text-white font-semibold">building the web</span>, one byte at a time, from <span class="text-black dark:text-white font-semibold">London</span>.</p>
-			<p>Welcome to a corner of the internet where code meets storytelling. This is a place where I document my adventures in software development, sharing the lessons, triumphs, and challenges that shape my journey. Dive in and discover the stories behind the code.</p>
+			<p>Welcome to my <a href="https://xkcd.com/195/" target="_blank">corner of the internet</a>. This is a place where I document my adventures in software development, sharing the lessons, triumphs, and challenges that shape my journey. Dive in and discover the stories behind the code.</p>
 
 			<p>I am writing a blog to document my journey into Software Development to reinforce my learning, and hopefully help others facing similar problems.</p>
 			{posts
 				.sort((a, b) => b.data.publishDate - a.data.publishDate)
 				.slice(0, 3)
 				.map(post => (
-					<a href={`posts/${post.slug}`} class="flex items-center justify-between gap-x-2 py-2 px-4 group not-prose rounded border border-stone-400 dark:border-stone-700 bg-stone-200 hover:bg-stone-300 hover:text-black dark:bg-stone-900 hover:dark:bg-stone-800 hover:dark:text-white transition-all duration-500">
+					<a href={`posts/${post.slug}`} class="flex items-center justify-between gap-x-2 py-2 px-4 group not-prose rounded border border-stone-400 dark:border-stone-700 bg-stone-200 hover:bg-stone-300 hover:text-black dark:bg-stone-900 hover:dark:bg-stone-800 hover:dark:text-white transition-all ">
 						<div>
 							<p href={`/posts/${post.slug}`}>{post.data.title}</p>
 							<p class="text-sm text-stone-500">{post.data.publishDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
