@@ -11,6 +11,7 @@ const posts = await getCollection('post');
 			<p>I am writing this blog to document my journey into Software Development, and to reinforce my learning. I will be coving topics and technologies that I am interested in leanring or using at the time.</p>
 			<main class="not-prose space-y-4 mt-10">
 				{posts
+					.filter(post => post.data.published)
 					.sort((a, b) => b.data.publishDate - a.data.publishDate)
 					.map(post => (
 						<a href={`posts/${post.slug}`} class="flex items-center gap-x-2 group w-fit">
