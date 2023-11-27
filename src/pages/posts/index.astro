@@ -12,10 +12,10 @@ const posts = await getCollection('post');
 			<main class="not-prose space-y-4 mt-10">
 				{posts
 					.filter(post => post.data.published)
-					.sort((a, b) => b.data.publishDate - a.data.publishDate)
+					.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
 					.map(post => (
 						<a href={`posts/${post.slug}`} class="flex items-center gap-x-2 group w-fit">
-							<p class="text-stone-600 group-hover:text-stone-900 group-hover:dark:text-stone-50 dark:text-stone-400 transition-colors" href={`/posts/${post.slug}`}>{post.data.title}</p>
+							<p class="text-stone-600 group-hover:text-stone-900 group-hover:dark:text-stone-50 dark:text-stone-400 transition-colors">{post.data.title}</p>
 							<p class="text-stone-400 dark:text-stone-500 group-hover:text-stone-600 group-hover:dark:text-stone-400 text-sm transition-colors">{post.data.publishDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
 						</a>
 					)
