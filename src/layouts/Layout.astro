@@ -21,7 +21,6 @@ const path = Astro.url.pathname;
 	</head>
 	<body class="transition-all bg-white dark:bg-black max-w-2xl mx-auto container">
 		<header class="py-14 md:pb-20 text-stone-700 dark:text-stone-200">
-			<p>{path}</p>
 			<nav class="flex justify-between">
 				<ul class="flex gap-x-4">
 					<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/">home</a>{path === '/' && <div transition:name="nav-underline" class="h-px w-full bg-stone-200 dark:bg-stone-800"></div>}</li>
