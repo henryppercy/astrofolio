@@ -85,9 +85,9 @@ const { title } = Astro.props;
 
 <script is:inline>
   function setDarkMode(document) {
-		let theme = localStorage.getItem('theme') || 'dark'; // Default to 'light' if nothing is stored
-		document.documentElement.classList.remove('light', 'dark'); // Remove both classes
-		document.documentElement.classList.add(theme); // Add the correct theme class
+		let theme = localStorage.getItem('theme') || 'dark';
+		document.documentElement.classList.remove('light', 'dark');
+		document.documentElement.classList.add(theme);
 
 		const darkThemeIcon = document.getElementById('dark-theme-icon');
 		const lightThemeIcon = document.getElementById('light-theme-icon');
