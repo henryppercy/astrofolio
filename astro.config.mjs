@@ -6,7 +6,7 @@ import netlify from "@astrojs/netlify/functions";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [tailwind(), mdx()],
-  output: "server",
-  adapter: netlify()
+  integrations: [tailwind(), mdx()]
+  // output: "server",
+  // adapter: netlify()
 });
