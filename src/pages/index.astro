@@ -12,9 +12,9 @@ const posts = await getCollection('post');
 		<section class="space-y-5 prose prose-stone dark:prose-invert">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Henry</h1>
 			<p>Junior Software Developer <span class="text-black dark:text-white font-semibold">building the web</span>, one byte at a time, from <span class="text-black dark:text-white font-semibold">London</span>.</p>
-			<p>Welcome to my <a href="https://xkcd.com/195/" target="_blank">corner of the internet</a>. This is a place where I document my adventures in software development, sharing the lessons, triumphs, and challenges that shape my journey. Dive in and discover the stories behind the code.</p>
+			<p>Welcome to my <a href="https://xkcd.com/195/" target="_blank">corner of the internet</a>. This is a place where I document my adventures in Software Development, sharing the lessons, triumphs, and challenges that shape my journey.</p>
 
-			<p>I am writing a blog to document my journey into Software Development to reinforce my learning, and hopefully help others facing similar problems.</p>
+			<p>On my blog you'll find writing about technologies I'm interested in learning at the time and the projects I'm working on.</p>
 			{posts
 				.filter(post => post.data.published)
 				.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
