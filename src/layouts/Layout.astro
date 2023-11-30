@@ -37,6 +37,7 @@ const path = Astro.url.pathname;
 	</body>
 	<footer class="mt-20 mb-14 md:mb-44">
 		<div class="space-y-5">
+			{path !== '/' && <p class="flex gap-x-1 items-center mb-10"><svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"><path class="fill-stone-400 dark:fill-stone-500" d="M10 6L8.59 7.41L13.17 12l-4.58 4.59L10 18l6-6z"/></svg><a class="text-stone-400 dark:text-stone-500 border-b border-b-stone-200 dark:border-b-stone-800 transition-colors duration-500 hover:border-b-stone-400 hover:dark:border-b-stone-500" href="/">cd ~</a></p>}
 			<div class="flex gap-x-1.5">
 				<a class="transition-transform hover:scale-110 hover:rotate-6 group" href="https://github.com/henryppercy" target="_blank">
 					<svg class="group-hover:[&_path]:fill-stone-900 group-hover:[&_path]:dark:fill-stone-50" xmlns="http://www.w3.org/2000/svg" width=20 height=20 viewBox="0 0 24 24">
