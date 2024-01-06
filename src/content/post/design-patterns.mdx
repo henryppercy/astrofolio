@@ -1,0 +1,437 @@
+---
+title: "Design Patterns: The Good, The Bad, and The Contextual"
+publishDate: "2024-01-06"
+author: "Henry Percy"
+published: true
+description: "Design patterns are a core concept in Software Development, but what are they and why should I use them? What patterns exist and should I always use them? This article will help to demystify design patterns and should give you an indication of their benefits and drawbacks."
+tags:
+    - Design Patterns
+    - Software Design
+    - Software Architecture
+---
+
+# Design Patterns: The Good, The Bad, and The Contextual
+
+## What are Design Patterns
+
+Design patterns are reusable approaches to common problems in software development. They provide a blueprint for you to adapt in order to organise your code in a way which will improve your ability to solve a given problem. 
+
+***But a word of warning..***
+
+Design patterns are *not* exact solutions to copy and paste, *not* a specific piece of code, and are *not* a one-size-fix-all solution. As such you shouldn't be fooled into forcing a given design pattern into your code, as you'll likely won't see any performance or code quality improvements, in fact you may find the opposite.
+
+## Are Design Patterns Limited to OOP?
+
+Before we get into it, I should mention that while design patterns have their roots in [object oriented programming](https://www.google.co.uk/books/edition/_/6oHuKQe3TjQC?hl=en), and many if not all examples online are implemented using OOP, design patterns are not limited to this paradigm. Nor are they limited to the examples you find in a book or blog post. 
+
+Design patterns are just that, patterns. They are patterns which make solutions simpler and easier to work with when implemented in code, no matter the paradigm. Chances are you have already deployed some form a pattern to tackle a common problem in your project or work. 
+
+With all that being said, what are the types of pattern which are commonly discussed? 
+
+## The Three Flavours of Pattern
+
+There are three types of design patterns that you'll commonly come across. These are described in this fantastic resource by [Refactoring Guru](https://refactoring.guru/design-patterns/classification) as:
+
+- **Creational patterns** - provide object creation mechanisms that increase flexibility and reuse of existing code.
+- **Structural patterns** - explain how to assemble objects and classes into larger structures, while keeping these structures flexible and efficient.
+- **Behavioural patterns** - take care of effective communication and the assignment of responsibilities between objects.
+
+These categories separate patterns into their intended use case, and can help in identifying use cases.
+
+## Let's take a look at some examples
+
+To keep things relatively brief, we'll take a look at one popular pattern from each category, starting with the strategy pattern. I'll implement all examples in TypeScript as it has a simple syntax making it easy to follow (no `static public void main`, sorry Java fans).
+
+### Strategy Pattern
+
+The *Strategy Pattern* is a behavioural pattern that aids in easily switching the method (or strategy) used within a given context. A good example of this is would be a payment service within an e-commerce application.
+
+Let's start by building a very basic payment service:
+
+```ts
+class PaymentService {
+	private stripePayment: StripePayment;
+
+	constructor(stripePayment: StripePayment) {
+		this.stripePayment = stripePayment;
+	}
+	
+	public async pay(price: number, currency: string) {
+		// payment logic using Stripe
+		this.stripePayment.pay(price, currency);
+	}
+	
+	public async refund() {
+		// ...
+	}
+	
+	public async cancel() {
+		// ...
+	}
+}
+```
+
+The payment service can handle making, refunding, and canceling payments. Currently we have implemented this using Stripe, however, let's say we've just onboarded a client that handles all of their existing payments via PayPal, and insist we do the same for their site.
+
+Currently the payment logic is *tightly coupled* with the Stripe logic, making adding PayPal for the client difficult. 
+
+Let's refactor to use the strategy pattern and see how that improves the solution.
+
+We'll start by creating an interface which all payments will implement:
+
+```ts
+interface Payment {
+	pay(price: number, currency: string): Promise<void>;
+	refund(): Promise<void>;
+	cancel(): Promise<void>;
+}
+```
+
+We can then create our Stripe and PayPal payment classes which will implement these methods:
+
+```ts
+class StripePayment implements Payment {
+	public async pay(price: number, currency: string) {
+		// Stripe payment logic
+	}
+
+	public async refund() {...}
+	public async cancel() {...}
+}
+
+class PayPalPayment implements Payment {
+	public async pay(price: number, currency: string) {
+		// PayPal payment logic
+	}
+	
+	public async refund() {...}
+	public async cancel() {...}
+}
+```
+
+We can then swap StripePayment for Payment within our service, meaning we now don't need to worry about what concrete class is used:
+
+```ts
+class PaymentService {
+	private payment: Payment;
+	
+	constructor(payment: Payment) {
+		this.payment = payment;
+	}
+	
+	public async pay(price: number, currency: string) {
+		// payment logic using any payment method
+		this.payment.pay(price, currency);
+	}
+	
+	public async refund() {...}
+	
+	public async cancel() {...}
+}
+```
+
+By encapsulating payment logic under a shared interface we have loosely coupled our `PaymentService` with the implementations of a `Payment`, making the code more flexible and maintainable.
+
+This has made it trivial to add new payment methods in future, as we can just create classes which handle the new payment logic and as long as they implement `Payment`, it'll work. 
+
+There are too many scenarios where this could be useful to list, but here are a few:
+
+- **Sorting**: change sorting algorithm for small and large datasets
+- **Logging**: use different logging tools for different environments
+- **Authentication**: update authentication methods for users based on user status
+- **Encryption**: different encryption methods for different data types
+
+### Builder Pattern
+
+The next pattern we'll look is the *Builder Pattern* which is a creational pattern that helps in creating complex, often highly configureable, objects while reducing complex constructor logic. You can easily identify when to use this pattern when you find yourself with a constructor signature that looks like this:
+
+```ts
+class SQLQuery {
+  constructor(select, from = '', where = '', join = '', groupBy = '', ...) {
+    // horrible null checks and instantiation logic
+  }
+}
+```
+
+Clearly this isn't practical, especially in the context of an SQL query where you might have 10+ components of a given statement, or you may have only 1 or 2. This would mean potentially passing in lots of default values every time you want to create a new query. 
+
+Given this, lets take a look at how this might look after implementing the builder pattern. We'll start with the `SQLQuery` class itself:
+
+```ts
+class SQLQuery {
+  select: string;
+  from: string;
+  where: string;
+  join: string;
+  groupBy: string;
+  limit: string;
+
+  constructor(builder: SQLQueryBuilder) {
+    this.select = builder.select;
+    this.from = builder.from;
+    this.where = builder.where;
+    this.join = builder.join;
+    this.groupBy = builder.groupBy;
+    this.limit = builder.limit;
+  }
+}
+```
+
+You'll notice that rather than pollute the constructor signature with every property with a default, only one argument needs to be passed in, the **builder**.
+
+This builder is a class which will contain methods that will set properties, and then return the instance of the current object. By returning an instance of the object you allow for method chaining for a more concise syntax. The builder will also include a `build` method to actually instantiate the class you are building.
+
+Let's take a look at the `SQLQueryBuilder` class and how to use it:
+
+```ts
+class SQLQueryBuilder {
+  selectClauses: string[] = [];
+  fromClause: string = '';
+  whereClause: string = '';
+  joinClauses: string[] = [];
+  groupByClause: string = '';
+  limitClause: string = '';
+
+  public select(select : string[]): SQLQueryBuilder {
+    this.selectClauses = select;
+    return this;
+  }
+
+  public from(from: string): SQLQueryBuilder {
+    this.fromClause = from;
+    return this;
+  }
+
+  public where(where: string): SQLQueryBuilder {
+    this.whereClause = where;
+    return this;
+  }
+
+  public join(innerJoin: string[]): SQLQueryBuilder {
+    this.joinClauses = innerJoin;
+    return this;
+  }
+
+  public groupBy(groupBy: string): SQLQueryBuilder {
+    this.groupByClause = groupBy;
+    return this;
+  }
+
+  public limit(limit: string): SQLQueryBuilder {
+    this.limitClause = limit; 
+    return this;
+  }
+
+  public build(): SQLQuery {
+   return new SQLQuery(this); 
+  }
+}
+```
+
+Here you can see that we have all the properties as expected, but instead of a polluted constructor we have a series of setters which set the value and return the instance. We can now use our new builder class like so:
+
+```ts
+const query = new SQLQueryBuilder()
+  .select(['name', 'age'])
+  .from('users')
+  .where('age > 24')
+  .join(['user_details ON users.id = user_details.user_id'])
+  .groupBy('age')
+  .limit('10')
+  .build();
+```
+
+Not only is this easier to read by virtue of the name of the parameter/action stated by the method call, it also means that if we need to create a query with less components, we can easily do so without passing in all the default values:
+
+```ts
+// with builder pattern
+const simpleQuery = new SQLQueryBuilder()
+  .select(['name', 'age'])
+  .from('users')
+  .where('age > 24')
+  .build();
+
+// with constructor
+const query = new SQLQuery(
+  ['name', 'age'],   // selectClauses
+  'users',           // fromClause
+  'age > 18',        // whereClause
+  [''],              // joinClauses
+  '',                // groupByClause
+  ''                 // limitClause
+);
+```
+
+Ignoring the oversimplification, the above example shows how the builder can make your code less complex, easier to read, and more flexible. 
+
+Again, there are many circumstances where you might reach for the builder pattern, but in general if the creation process happens in multiple stages and the constructor starts to become polluted, it may be time to consider the builder pattern.
+
+### Adaptor 
+
+Finally we will take a look at the *Adaptor Pattern*, a structural pattern. The adaptor pattern allows you to convert the interface of a given object to another, which a receiver or client might expect. 
+
+This is analogous to how a outlet adaptor works in real life. You have an object (your UK phone charger) which you wish to use with a client/receiver (a US power outlet). The missing piece here is the adaptor which makes the two incompatible interfaces compatible, in simple terms, the adaptor gives your first object the interface of the other.
+
+The most common use case is adapting new code to work with a legacy system, so let's look at an example which follows this use case. 
+
+Imagine that as a business you have decided to migrate from on-premise servers to the cloud. Some in-house applications will keep using the small on-premise server, and new services will be built on the cloud. 
+
+That leaves the other existing services with code that works for the on-premise server environment, but will now need to run in a cloud environment.
+
+Below is a bare bones example of a class used to authenticate a user on the server:
+
+```ts
+interface ServerAuthenticator {
+    authenticateUser(username: string, password: string): Promise<boolean>;
+}
+
+class LegacyServerAuth implements ServerAuthenticator {
+    public async authenticateUser(username: string, password: string): Promise<boolean> {
+        console.log(`Authenticating ${username} with LDAP.`);
+        // On prem authentication logic
+        return true;
+    }
+}
+```
+
+The `ServerAuthenticator` interface expects an `authenticateUser` method which will return a boolean representing if the user is authenticated or not. Currently `LegacyServerAuth` implements this using *Lightweight Directory Access Protocol* (LDAP) for the on-premise server. 
+
+However, the new cloud first approach dictates that new authenticators looks something like this:
+
+```ts
+class CloudAuth {
+	public async getToken(username: string, password: string): Promise<string> {
+        console.log(`Requesting OAuth token for ${username} from cloud service.`);
+        // API call logic
+        return "OAuth-token";
+    }
+}
+```
+
+Our new cloud based authenticator doesn't contain `authenticateUser`, as the authentication flow is based on OAuth, rather than LDAP. This presents problems. Say we have the following client code:
+
+```ts
+async function authenticateUser(authenticator: ServerAuthenticator, username: string, password: string) {
+    const isAuthenticated = await authenticator.authenticateUser(username, password);
+
+    if (isAuthenticated) {
+        console.log(`${username} is authenticated.`);
+    } else {
+        console.log(`${username} is not authenticated.`);
+    }
+}
+
+```
+
+Our `CloudAuth` class is incompatible with `authenticateUser` as it doesn't implement `ServerAuthenticator`. This is the time to reach for an adaptor.
+
+```ts
+class CloudAuthAdaptor implements ServerAuthenticator {
+    private cloudAuth: CloudAuth;
+
+    constructor(cloudAuth: CloudAuth) {
+        this.cloudAuth = cloudAuth;
+    }
+
+	// authenticateUser function has been adapted
+    public async authenticateUser(username: string, password: string): Promise<boolean> {
+		try {
+			await this.cloudAuth.getToken(username, password)
+			// Send the OAuth token to the client
+			return true;
+		} catch(error) {
+            console.error("Authentication failed:", error);
+            return false;
+        }
+    }
+}
+```
+
+Here we are passing in an instance of `CloudAuth` so that now we have implemented `ServerAuthenticator`, we can adapt the `authenticateUser` method to use the `CloudAuth` logic rather than the `LegacyServerAuth` logic. We can now do this:
+
+```ts
+// Legacy system usage
+const legacyAuth = new LegacyServerAuth();
+authenticateUser(legacyAuth, "legacyUser", "legacyPass");
+
+// New system with adaptor
+const cloudAuth = new CloudAuth();
+const authAdaptor = new CloudAuthAdaptor(cloudAuth);
+authenticateUser(authAdaptor, "newUser", "newPass");
+```
+
+Now, this is clearly a very simplified look at what would be a much more complex problem, but you can see how using the adaptor pattern has allowed use to use new functionality with existing client code. 
+
+Here we have just looked at authentication, however, this pattern would allow you to adapt all aspects of the legacy server migration such as:
+
+- Networking
+- Data Storage
+- Service Interaction
+- Configuration
+- Management
+- Scalability
+
+## Golden Hammers, God Objects, and the Anti Pattern
+
+Using design patterns aren't without their flaws, however. Common criticism includes:
+
+- **Workarounds** - design patterns provide workarounds for ill-designed systems or languages
+- **Unjustified** - implementing design patterns for the sake of design patterns assuming code improvements
+- **Aimless** - without adapting patterns for your specific context you risk aimlessly factoring your code without considering better suited solutions
+
+These are not so much a criticism of design patterns themselves, more a criticisms of their implementation and misuse. This misuse has a name, **anti-pattern**. Anti-patterns aren't just the antithesis of design patterns, but also can describe misuse or lack of use of design patterns.
+
+In general you can think of anti-patterns as using:
+
+- a widely condemned pattern or common anti-patterns
+- the wrong pattern for the job
+- no patterns at all (spaghetti code)
+
+Let's look at the above in some more detail. 
+### Condemned Patterns
+
+Condemned Patterns include commonly cited and well documented *anti-patterns* such as [The Blob/The God Class](https://sourcemaking.com/antipatterns/the-blob) and [Lava Flow](https://sourcemaking.com/antipatterns/lava-flow); but, also contain commonly criticised *design patterns* such as *Singleton*. 
+
+Although the use case for singleton seems logical (for when you only want one instance of an object in your application), it exposes many more pitfalls that negate the improvement such as:
+
+- introducing global state
+- tightly coupled code
+- makes mocking and testing difficult 
+- difficult to debug
+
+This is not to say you should never use singleton, in some small, simple projects it might be the right design pattern, but before using it you should asses if it makes sense you context and problem.
+
+### The Wrong Pattern (Golden Hammer)
+
+Using the wrong design pattern for the job is commonly referred to as the *Golden Hammer* anti-pattern. This usually occurs when you have learn about a design pattern (perhaps in an amazing article titled '*Understanding Design Patterns*') and then try to shoehorn it into your code. 
+
+After all "*if all you have is a hammer, everything looks like a nail*".
+
+I mentioned this at the toward the start of this article, if you try to implement a given design pattern, without considering your context and the problem you're trying to solve, and assume code improvements, you'll likely be disappointed. 
+
+### No Patterns
+
+Using no patterns at all can be considered an anti-pattern, spaghetti code to give it a name. Writing software with no design or structure can lead to code that is hard to read, maintain, and test.
+
+This is a balancing act, though. Just because design patterns exist and can offer solutions to the problems listed above, does ***not*** mean you need to use them in your project.
+
+Undertale is a video game that has universal appraise from critics and fans, and has has sold millions of copies. Undertale also handles it's dialogue with a switch statement with nested conditionals over [1000+ lines long](https://github.com/fachinformatiker/undertale/blob/master/scripts/SCR_TEXT.gml)..
+
+Would Undertale have been produced and released if the developer had been bogged down in which design patterns to use?
+
+The best software is the software that solves a specific problem. It doesn't matter how the code is organised or written, as long as it works and adds value it is good software. 
+
+## Conclusion  
+
+Design patterns, reusable approaches to common problems in software development. Useful when used properly in context, potentially damaging when they're not.
+
+## Reading and Resources
+
+- https://refactoring.guru/design-patterns
+- https://github.com/kamranahmedse/design-patterns-for-humans
+- https://www.contentful.com/blog/singleton-pattern-evil-or-misused/
+- https://obarguti.medium.com/design-patterns-the-adapter-pattern-1548bd2f59c3
+- https://exceptionnotfound.net/the-golden-hammer-anti-pattern-primers/
+- https://medium.com/@carlos.ariel.mamani/the-god-object-or-god-class-anti-pattern-bfb8c15eb513
+- https://sourcemaking.com/antipatterns
+- https://www.patterns.dev/
