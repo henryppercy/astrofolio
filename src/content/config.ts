@@ -7,6 +7,7 @@ const postCollection = defineCollection({
     publishDate: z.string().transform((str: string) => new Date(str)),
     published: z.boolean(),
     description: z.string(),
+    readTime: z.number(),
     author: z.string().default('Henry Percy'),
     image: z.object({
       url: z.string(),
