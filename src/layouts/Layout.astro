@@ -10,7 +10,7 @@ const path = Astro.url.pathname;
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="vitesse-dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
@@ -89,16 +89,18 @@ const path = Astro.url.pathname;
 <script is:inline>
   function setDarkMode(document) {
 		let theme = localStorage.getItem('theme') || 'dark';
-		document.documentElement.classList.remove('light', 'dark');
+		document.documentElement.classList.remove('dark');
 		document.documentElement.classList.add(theme);
 
 		const darkThemeIcon = document.getElementById('dark-theme-icon');
 		const lightThemeIcon = document.getElementById('light-theme-icon');
 
 		if (theme === 'dark') {
+			document.documentElement.setAttribute('data-theme', 'vitesse-dark')
 			darkThemeIcon.classList.remove('hidden');
 			lightThemeIcon.classList.add('hidden');
 		} else {
+			document.documentElement.setAttribute('data-theme', 'vitesse-light')
 			darkThemeIcon.classList.add('hidden');
 			lightThemeIcon.classList.remove('hidden');
 		}
@@ -119,6 +121,12 @@ const path = Astro.url.pathname;
 			html.classList.toggle('dark');
 			darkThemeIcon.classList.toggle('hidden');
 			lightThemeIcon.classList.toggle('hidden');
+
+			if (theme === 'dark') {
+				document.documentElement.setAttribute('data-theme', 'vitesse-dark')
+			} else {
+				document.documentElement.setAttribute('data-theme', 'vitesse-light')
+			}
 		});
 	}
 

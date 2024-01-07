@@ -48,26 +48,21 @@ The *Strategy Pattern* is a behavioural pattern that aids in easily switching th
 
 Let's start by building a very basic payment service:
 
-```ts
+```ts title="PaymentService.ts"
 class PaymentService {
-	private stripePayment: StripePayment;
+	private payment: StripePayment;
 
-	constructor(stripePayment: StripePayment) {
-		this.stripePayment = stripePayment;
+	constructor(payment: StripePayment) {
+		this.payment = payment;
 	}
 	
 	public async pay(price: number, currency: string) {
 		// payment logic using Stripe
-		this.stripePayment.pay(price, currency);
+		this.payment.pay(price, currency);
 	}
 	
-	public async refund() {
-		// ...
-	}
-	
-	public async cancel() {
-		// ...
-	}
+	public async refund() {...}
+	public async cancel() {...}
 }
 ```
 
@@ -79,7 +74,7 @@ Let's refactor to use the strategy pattern and see how that improves the solutio
 
 We'll start by creating an interface which all payments will implement:
 
-```ts
+```ts title="types.ts"
 interface Payment {
 	pay(price: number, currency: string): Promise<void>;
 	refund(): Promise<void>;
@@ -89,7 +84,7 @@ interface Payment {
 
 We can then create our Stripe and PayPal payment classes which will implement these methods:
 
-```ts
+```ts title="StripePayment.ts"
 class StripePayment implements Payment {
 	public async pay(price: number, currency: string) {
 		// Stripe payment logic
@@ -98,7 +93,9 @@ class StripePayment implements Payment {
 	public async refund() {...}
 	public async cancel() {...}
 }
+```
 
+```ts title="PayPalPayment.ts"
 class PayPalPayment implements Payment {
 	public async pay(price: number, currency: string) {
 		// PayPal payment logic
@@ -111,10 +108,12 @@ class PayPalPayment implements Payment {
 
 We can then swap StripePayment for Payment within our service, meaning we now don't need to worry about what concrete class is used:
 
-```ts
+```ts title="PaymentService.ts" del={2,5} ins={3,6}
 class PaymentService {
+  private stripePayment: StripePayment;
 	private payment: Payment;
 	
+  constructor(payment: StripePayment) {
 	constructor(payment: Payment) {
 		this.payment = payment;
 	}
@@ -125,7 +124,6 @@ class PaymentService {
 	}
 	
 	public async refund() {...}
-	
 	public async cancel() {...}
 }
 ```
@@ -145,9 +143,16 @@ There are too many scenarios where this could be useful to list, but here are a 
 
 The next pattern we'll look is the *Builder Pattern* which is a creational pattern that helps in creating complex, often highly configureable, objects while reducing complex constructor logic. You can easily identify when to use this pattern when you find yourself with a constructor signature that looks like this:
 
-```ts
+```ts title="SQLQuery.ts"
 class SQLQuery {
-  constructor(select, from = '', where = '', join = '', groupBy = '', ...) {
+  select: string[];
+  from: string;
+  where: string;
+  join: string[];
+  groupBy: string;
+  limit: string;
+
+  constructor(select, from = '', where = '', join = [''], groupBy = '', limit = '') {
     // horrible null checks and instantiation logic
   }
 }
@@ -157,12 +162,12 @@ Clearly this isn't practical, especially in the context of an SQL query where yo
 
 Given this, lets take a look at how this might look after implementing the builder pattern. We'll start with the `SQLQuery` class itself:
 
-```ts
+```ts title="SQLQuery.ts"
 class SQLQuery {
-  select: string;
+  select: string[];
   from: string;
   where: string;
-  join: string;
+  join: string[];
   groupBy: string;
   limit: string;
 
@@ -183,7 +188,7 @@ This builder is a class which will contain methods that will set properties, and
 
 Let's take a look at the `SQLQueryBuilder` class and how to use it:
 
-```ts
+```ts title="SQLQueryBuilder.ts"
 class SQLQueryBuilder {
   selectClauses: string[] = [];
   fromClause: string = '';
@@ -230,7 +235,7 @@ class SQLQueryBuilder {
 
 Here you can see that we have all the properties as expected, but instead of a polluted constructor we have a series of setters which set the value and return the instance. We can now use our new builder class like so:
 
-```ts
+```ts title="UserRepository.ts"
 const query = new SQLQueryBuilder()
   .select(['name', 'age'])
   .from('users')
@@ -243,19 +248,18 @@ const query = new SQLQueryBuilder()
 
 Not only is this easier to read by virtue of the name of the parameter/action stated by the method call, it also means that if we need to create a query with less components, we can easily do so without passing in all the default values:
 
-```ts
+```ts title="UserRepository.ts"
 // with builder pattern
-const simpleQuery = new SQLQueryBuilder()
+const builderQuery = new SQLQueryBuilder()
   .select(['name', 'age'])
   .from('users')
-  .where('age > 24')
   .build();
 
-// with constructor
-const query = new SQLQuery(
+// with telescoped constructor
+const constructorQuery = new SQLQuery(
   ['name', 'age'],   // selectClauses
   'users',           // fromClause
-  'age > 18',        // whereClause
+  '',                // whereClause
   [''],              // joinClauses
   '',                // groupByClause
   ''                 // limitClause
@@ -280,17 +284,19 @@ That leaves the other existing services with code that works for the on-premise 
 
 Below is a bare bones example of a class used to authenticate a user on the server:
 
-```ts
+```ts title="types.ts"
 interface ServerAuthenticator {
-    authenticateUser(username: string, password: string): Promise<boolean>;
+	authenticateUser(username: string, password: string): Promise<boolean>;
 }
+```
 
+```ts title="LegacyServerAuth.ts"
 class LegacyServerAuth implements ServerAuthenticator {
-    public async authenticateUser(username: string, password: string): Promise<boolean> {
-        console.log(`Authenticating ${username} with LDAP.`);
-        // On prem authentication logic
-        return true;
-    }
+	public async authenticateUser(username: string, password: string): Promise<boolean> {
+		console.log(`Authenticating ${username} with LDAP.`);
+		// On prem authentication logic
+		return true;
+	}
 }
 ```
 
@@ -298,58 +304,57 @@ The `ServerAuthenticator` interface expects an `authenticateUser` method which w
 
 However, the new cloud first approach dictates that new authenticators looks something like this:
 
-```ts
+```ts title="CloudAuth.ts"
 class CloudAuth {
 	public async getToken(username: string, password: string): Promise<string> {
-        console.log(`Requesting OAuth token for ${username} from cloud service.`);
-        // API call logic
-        return "OAuth-token";
-    }
+		console.log(`Requesting OAuth token for ${username} from cloud service.`);
+		// API call logic
+		return "OAuth-token";
+	}
 }
 ```
 
 Our new cloud based authenticator doesn't contain `authenticateUser`, as the authentication flow is based on OAuth, rather than LDAP. This presents problems. Say we have the following client code:
 
-```ts
+```ts title="client.ts"
 async function authenticateUser(authenticator: ServerAuthenticator, username: string, password: string) {
-    const isAuthenticated = await authenticator.authenticateUser(username, password);
+	const isAuthenticated = await authenticator.authenticateUser(username, password);
 
-    if (isAuthenticated) {
-        console.log(`${username} is authenticated.`);
-    } else {
-        console.log(`${username} is not authenticated.`);
-    }
+	if (isAuthenticated) {
+		console.log(`${username} is authenticated.`);
+	} else {
+		console.log(`${username} is not authenticated.`);
+	}
 }
 
 ```
 
 Our `CloudAuth` class is incompatible with `authenticateUser` as it doesn't implement `ServerAuthenticator`. This is the time to reach for an adaptor.
 
-```ts
+```ts title="CloudAuthAdaptor.ts" "implements ServerAuthenticator" "authenticateUser"
 class CloudAuthAdaptor implements ServerAuthenticator {
-    private cloudAuth: CloudAuth;
+	private cloudAuth: CloudAuth;
 
-    constructor(cloudAuth: CloudAuth) {
-        this.cloudAuth = cloudAuth;
-    }
+	constructor(cloudAuth: CloudAuth) {
+		this.cloudAuth = cloudAuth;
+	}
 
-	// authenticateUser function has been adapted
-    public async authenticateUser(username: string, password: string): Promise<boolean> {
+ 	public async authenticateUser(username: string, password: string): Promise<boolean> {
 		try {
 			await this.cloudAuth.getToken(username, password)
 			// Send the OAuth token to the client
 			return true;
 		} catch(error) {
-            console.error("Authentication failed:", error);
-            return false;
-        }
-    }
+			console.error("Authentication failed:", error);
+			return false;
+		}
+	}
 }
 ```
 
 Here we are passing in an instance of `CloudAuth` so that now we have implemented `ServerAuthenticator`, we can adapt the `authenticateUser` method to use the `CloudAuth` logic rather than the `LegacyServerAuth` logic. We can now do this:
 
-```ts
+```ts title="client.ts" {7}
 // Legacy system usage
 const legacyAuth = new LegacyServerAuth();
 authenticateUser(legacyAuth, "legacyUser", "legacyPass");
