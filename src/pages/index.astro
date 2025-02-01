@@ -12,9 +12,9 @@ const posts = await getCollection('post');
 		<section class="space-y-5 prose prose-stone dark:prose-invert">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Henry</h1>
 			<p>Junior Software Developer <span class="text-black dark:text-white font-semibold">building the web</span>, one byte at a time, from <span class="text-black dark:text-white font-semibold">London</span>.</p>
-			<p>Welcome to my <a href="https://xkcd.com/195/" target="_blank">corner of the internet</a>. This is a place where I document my adventures in Software Development, sharing the lessons, triumphs, and challenges that shape my journey.</p>
+			<!-- <p>Welcome to my <a href="https://xkcd.com/195/" target="_blank">corner of the internet</a>. This is a place where I document my adventures in Software Development, sharing the lessons, triumphs, and challenges that shape my journey.</p> -->
 
-			<p>On my blog you'll find writing about technologies I'm interested in learning at the time and the projects I'm working on.</p>
+			<!-- <p>On my blog you'll find writing about technologies I'm interested in learning at the time and the projects I'm working on.</p>
 			{posts
 				.filter(post => post.data.published)
 				.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
@@ -28,7 +28,7 @@ const posts = await getCollection('post');
 						<svg class="shrink-0 fill-stone-700 dark:fill-stone-300 group-hover:fill-black group-hover:dark:fill-white transition-all duration-500" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"><path d="m16 8.4l-8.9 8.9q-.275.275-.7.275t-.7-.275q-.275-.275-.275-.7t.275-.7L14.6 7H7q-.425 0-.713-.288T6 6q0-.425.288-.713T7 5h10q.425 0 .713.288T18 6v10q0 .425-.288.713T17 17q-.425 0-.713-.288T16 16V8.4Z"/></svg>
 					</a>
 				)
-			)}
+			)} -->
 		</section>
 	</main>
 </Layout>
