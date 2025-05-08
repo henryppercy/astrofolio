@@ -12,18 +12,24 @@ const posts = await getCollection('post');
 		<section class="prose prose-stone dark:prose-invert">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Blog</h1>
 			<p>I am writing this blog to document my journey in Software Development, and to reinforce my learning. I will be covering topics and technologies that I am interested in learning or using at the time.</p>
-			<main class="not-prose space-y-4 mt-10">
+			<ul class="not-prose space-y-4 mt-10">
 				{posts
 					.filter(post => post.data.published)
 					.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
+					.slice(0, 3)
 					.map(post => (
-						<a href={`posts/${post.slug}`} class="flex items-center gap-x-2 group w-fit">
-							<p class="text-stone-600 group-hover:text-stone-900 group-hover:dark:text-stone-50 dark:text-stone-400 transition-colors">{post.data.title}</p>
-							<p class="text-stone-400 dark:text-stone-500 group-hover:text-stone-600 group-hover:dark:text-stone-400 text-sm transition-colors">{post.data.publishDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</p>
-						</a>
+						<li>
+							<a href={`posts/${post.slug}`} class="flex items-baseline space-x-4 group">
+								<p class="flex-none group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors">{post.data.title}</p>
+								<span class="w-full flex-shrink border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
+								<span class="flex-none font-mono text-xs tabular-nums">
+									<time datetime={String(post.data.publishDate)}>{post.data.publishDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</time>
+								</span>
+							</a>
+						</li>
 					)
 				)}
-			</main>
+			</ul>
 		</section>
 	</main>
 </Layout>
