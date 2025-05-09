@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import JobSummary from '../components/JobSummary.astro';
 
 export const prerender = true;
 
@@ -10,11 +11,11 @@ const posts = await getCollection('post');
 <Layout title="Henry Percy">
 	<main class="space-y-5 prose prose-stone dark:prose-invert max-w-3xl">
 		<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Henry</h1>
-		<p>Hey, I'm a <span class="text-black dark:text-white font-semibold">Software Developer</span> in <span class="text-black dark:text-white font-semibold">London</span>. This site’s a place for my notes, ideas, and the occasional project.</p>
+		<p>Hey, I'm a <span class="text-black dark:text-white font-semibold">Software Developer</span> in <span class="text-black dark:text-white font-semibold">London</span>. This site is a place for my notes, ideas, and the occasional project.</p>
 
 		<section>
 			<h2>Writing</h2>
-			<ul class="not-prose space-y-4">
+			<ul class="not-prose space-y-3">
 				{posts
 					.filter(post => post.data.published)
 					.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
@@ -36,53 +37,7 @@ const posts = await getCollection('post');
 
 		<section>
 			<h2>Work</h2>
-			<div class="space-y-4">
-				<details>
-					<summary class="group flex cursor-pointer items-baseline space-x-4">
-						<span class="flex-none font-medium group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors">
-							Rework Digital
-						</span>
-						<span class="w-full flex-shrink border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
-						<span class="flex-none">
-							Software Developer
-						</span>
-						<span class="flex-none font-mono text-xs tabular-nums">
-							<time datetime="2023">2023</time>-<time datetime="2025">25</time>
-						</span>
-					</summary>
-					<p class="mb-8 max-w-3xl prose prose-stone dark:prose-invert text-sm">I currently spend the majority of my time coding, and specialise in developing e-commerce software using JavaScript and PHP.</p>
-				</details>
-				<details>
-					<summary class="group flex cursor-pointer items-baseline space-x-4">
-						<span class="flex-none font-medium group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors">
-							TRIA
-						</span>
-						<span class="w-full flex-shrink border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
-						<span class="flex-none">
-							Technical Delivery Consultant
-						</span>
-						<span class="flex-none font-mono text-xs tabular-nums">
-							<time datetime="2021">2021</time>-<time datetime="2022">22</time>
-						</span>
-					</summary>
-					<p class="mb-8 max-w-3xl prose prose-stone dark:prose-invert text-sm">As a Technical Delivery Consultant I focused on sourcing and hiring professionals such as Software Engineers, Product Managers, and Technical Leaders.</p>
-				</details>
-				<details>
-					<summary class="group flex cursor-pointer items-baseline space-x-4">
-						<span class="flex-none font-medium group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors">
-							<span class="hidden md:block">Faculty of Environment & Technology (UWE)</span><span class="hidden max-md:block">FET (UWE)</span>
-						</span>
-						<span class="w-full flex-shrink border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
-						<span class="flex-none">
-							Software Developer
-						</span>
-						<span class="flex-none font-mono text-xs tabular-nums">
-							<time datetime="2021">2021</time><span>&nbsp;&nbsp;&nbsp;</span>
-						</span>
-					</summary>
-					<p class="mb-8 max-w-3xl prose prose-stone dark:prose-invert text-sm">A six-month contract in the Faculty of Environment & Technology at the University of the West of England, I prototyped low cost alternatives to expensive environmental sensors using Arduino and C++ libraries.</p>
-				</details>
-			</div>
+			<JobSummary />
 		</section>
 	</main>
 </Layout>
