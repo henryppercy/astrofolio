@@ -29,4 +29,16 @@ const job = defineCollection({
   })
 });
 
-export const collections = { post, job };
+const spanish = defineCollection({
+  type: 'content',
+  schema: z.object({
+    hours: z.number(),
+    level: z.number(),
+    title: z.string().nullable(),
+    date_achieved: z.date().nullable(),
+    description: z.string().nullable(),
+    read_time: z.number().nullable(),
+  })
+});
+
+export const collections = { post, job, spanish, };

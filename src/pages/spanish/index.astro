@@ -1,0 +1,49 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+const spanish = await getCollection('spanish');
+---
+
+<Layout title="Spanish | Henry Percy">
+	<main>
+		<section class="prose prose-stone dark:prose-invert max-w-3xl">
+			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Spanish</h1>
+			<p>I am currently learning Spanish using <a href="https://en.wikipedia.org/wiki/Input_hypothesis">comprehensible input</a> via <a href="https://www.dreamingspanish.com/">Dreaming Spanish</a>.</p>
+			<h2>Progress Updates</h2>
+			<p>There are 7 milestones defined by Dreaming Spanish at intervals between 0 and 1500 hours. These are my reflections on the progress I've made at each one.</p>
+			<ul class="not-prose space-y-4 mt-10">
+				{spanish
+					.sort((a, b) => a.data.hours - b.data.hours)
+					.map(spanish => (
+						<li>
+							{!spanish.data.date_achieved ? (
+								<span class="group inline-flex justify-between w-full items-baseline gap-4 sm:inline-flex sm:gap-5">
+									<p class="flex-none w-[100px] text-right text-neutral-400 dark:text-neutral-700">
+										{spanish.data.hours.toLocaleString("en-GB")} Hours
+									</p>
+									<span class="m-0 flex-1 border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
+									<span class="flex-none font-mono text-xs tabular-nums text-neutral-400 dark:text-neutral-700">
+										<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;TBD</span>
+									</span>
+								</span>
+							) : (
+								<a href={`spanish/${spanish.slug}`} class="group inline-flex justify-between w-full items-baseline gap-4 sm:inline-flex sm:gap-5">
+									<p class="flex-none w-[100px] text-right font-medium group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors tabular-nums">
+										{spanish.data.hours.toLocaleString("en-GB")} Hours
+									</p>
+									<span class="m-0 flex-1 block border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
+									<span class="flex-none font-mono text-xs tabular-nums">
+										<time datetime={String(spanish.data.date_achieved)}>{spanish.data.date_achieved.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })}</time>
+									</span>
+								</a>
+							)}
+						</li>
+					)
+				)}
+			</ul>
+		</section>
+	</main>
+</Layout>
