@@ -19,4 +19,5 @@ const astroExpressiveCodeOptions = {
 export default defineConfig({
   integrations: [tailwind(), astroExpressiveCode(astroExpressiveCodeOptions), mdx()],
   adapter: netlify(),
+  output: 'server',
 });
