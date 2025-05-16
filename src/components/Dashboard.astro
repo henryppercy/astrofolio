@@ -136,8 +136,8 @@ const analysis = analyzeMonthTimes(currentMonthEntries);
 ---
 
 <div class="max-w-3xl space-y-5">
-    <h2>{DateTime.now().monthLong} Overview <span class="text-xs font-normal text-stone-700 dark:text-stone-400">({analysis.daysRemaining.toHuman()} left)</span></h2>
-    <p>My goal is to average {dailyGoalAverageSeconds.shiftTo('minutes').toHuman()} per day each month. Here's how I'm doing in {DateTime.now().monthLong}:</p>
+    <h2>{DateTime.now().monthLong} Overview</h2>
+    <p>My goal is to average {dailyGoalAverageSeconds.shiftTo('minutes').toHuman()} per day each month. Here's how I'm doing in {DateTime.now().monthLong} with {analysis.daysRemaining.toHuman()} left.</p>
     <div class="space-y-10">
         <div class="grid sm:grid-cols-3 gap-2">
             <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
