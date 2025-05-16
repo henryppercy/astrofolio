@@ -2,8 +2,6 @@
 import Dashboard from '../../components/Dashboard.astro';
 import Layout from '../../layouts/Layout.astro';
 
-export const prerender = true;
-
 import { getCollection } from 'astro:content';
 const spanish = await getCollection('spanish');
 ---
