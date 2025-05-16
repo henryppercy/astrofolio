@@ -1,4 +1,5 @@
 ---
+import Dashboard from '../../components/Dashboard.astro';
 import Layout from '../../layouts/Layout.astro';
 
 export const prerender = true;
@@ -12,8 +13,9 @@ const spanish = await getCollection('spanish');
 		<section class="prose prose-stone dark:prose-invert max-w-3xl">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Spanish</h1>
 			<p>I am currently learning Spanish using <a href="https://en.wikipedia.org/wiki/Input_hypothesis">comprehensible input</a> via <a href="https://www.dreamingspanish.com/">Dreaming Spanish</a>.</p>
+			<Dashboard />
 			<h2>Progress Updates</h2>
-			<p>There are 7 milestones defined by Dreaming Spanish at intervals between 0 and 1500 hours. These are my reflections on the progress I've made at each one.</p>
+			<p>There are 7 milestones defined by Dreaming Spanish at intervals between 0 and 1,500 hours. These are my reflections on the progress I've made at each one.</p>
 			<ul class="not-prose space-y-4 mt-10">
 				{spanish
 					.sort((a, b) => a.data.hours - b.data.hours)

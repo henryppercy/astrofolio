@@ -1,0 +1,165 @@
+---
+import { DateTime, Duration } from 'luxon';
+
+const bearerToken = import.meta.env.DS_BEARER_TOKEN;
+const goalSeconds = import.meta.env.DS_AVERAGE_GOAL_SECONDS;
+const URL = 'https://www.dreamingspanish.com/.netlify/functions/dayWatchedTime';
+const dailyGoalAverageSeconds = Duration.fromObject({ seconds: goalSeconds });
+
+function formatDuration(d: Duration): string {
+    const isNegative = d.as('seconds') < 0;
+    let absDuration = d;
+    if (isNegative) {
+        absDuration = d.negate();
+    }
+
+    const shifted = absDuration.hours
+        ? absDuration.shiftTo('hours', 'minutes')
+        : absDuration.shiftTo('minutes');
+
+    const human = shifted.toHuman({
+        maximumFractionDigits: 0,
+        unitDisplay: 'short',
+        listStyle: 'narrow',
+    });
+
+    return isNegative ? `-${human}` : human;
+}
+
+type DSEntry = {
+    userId: string;
+    date: string;
+    timeSeconds: number;
+    goalReached: boolean;
+};
+
+type MonthAnalysisRes = {
+    daysRemaining: Duration;
+    averageTime: Duration;
+    totalTime: Duration;
+    deficit: Duration;
+    surplus: Duration;
+};
+
+async function fetchDSTimes(URL: string, bearerToken: string): Promise<DSEntry[]> {
+    try {
+        const res = await fetch(URL, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+
+        const json: DSEntry[] = await res.json();
+
+        const dates = json.map(entry => entry.date);
+        const minDate = dates.length ? DateTime.fromISO(dates.reduce((a, b) => a < b ? a : b)) : null;
+        const maxDate = dates.length ? DateTime.fromISO(dates.reduce((a, b) => a > b ? a : b)) : null;
+
+        if (!minDate || !maxDate) return [];
+
+        const entriesByDate = new Map(json.map(entry => [entry.date, entry]));
+        const result: DSEntry[] = [];
+        let cursor = minDate.startOf('day');
+        const end = maxDate.startOf('day');
+
+        while (cursor <= end) {
+            const isoDate = cursor.toISODate();
+            if (isoDate && entriesByDate.has(isoDate)) {
+                result.push(entriesByDate.get(isoDate)!);
+            } else if (isoDate) {
+                result.push({
+                    userId: '',
+                    date: isoDate,
+                    timeSeconds: 0,
+                    goalReached: false
+                });
+            }
+            cursor = cursor.plus({ days: 1 });
+        }
+
+        return result;
+    } catch (e) {
+        return [];
+    }
+}
+
+function getMonthsTime(entries: DSEntry[], year: number, month: number): DSEntry[] {
+    return entries.filter(entry => {
+        const date = DateTime.fromISO(entry.date);
+        return date.year === year && date.month === month;
+    });
+}
+
+// this is generic to handle any month, but currently only using for the current month. May need a refactor
+function analyzeMonthTimes(entries: DSEntry[]): MonthAnalysisRes {
+    const isCurrentMonth = entries.some(entry => {
+        const date = new Date(entry.date);
+        const today = new Date();
+        return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth();
+    });
+        
+    const mostRecentDay = isCurrentMonth ? new Date() : new Date([...entries.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())].reverse()[0].date);
+
+    const previousEntries = entries.filter(entry => {
+        const entryDate = new Date(entry.date);
+        return entryDate <= mostRecentDay;
+    });
+
+    const totalTime = Duration.fromObject({ seconds: previousEntries.reduce((acc, entry) => acc + entry.timeSeconds, 0) }, { locale: 'en-GB'});
+    const averageTime = Duration.fromObject({ seconds: totalTime.as('seconds') / previousEntries.length }, { locale: 'en-GB'});
+
+    const daysInMonth = new Date(mostRecentDay.getFullYear(), mostRecentDay.getMonth() + 1, 0).getDate();
+    const daysRemaining = Duration.fromObject({ days: daysInMonth - mostRecentDay.getDate()}, { locale: 'en-GB'});
+
+    const daysSoFar = mostRecentDay.getDate();
+    const deficit = Duration.fromObject({ seconds: -dailyGoalAverageSeconds.get('seconds') * daysSoFar }, { locale: 'en-GB'}).minus(totalTime);
+    const surplus = totalTime.minus(Duration.fromObject({ seconds: dailyGoalAverageSeconds.get('seconds') * daysSoFar }, { locale: 'en-GB'}));
+
+    return {
+        daysRemaining,
+        averageTime: averageTime.shiftToAll(),
+        totalTime: totalTime.shiftToAll(),
+        deficit: deficit.shiftToAll(),
+        surplus: surplus.shiftToAll(),
+    };
+}
+
+const entries: DSEntry[] = await fetchDSTimes(URL, bearerToken);
+
+const today = new Date();
+const currentMonth = today.getMonth() + 1;
+const currentYear = today.getFullYear();
+
+const currentMonthEntries = getMonthsTime(entries, currentYear, currentMonth);
+const analysis = analyzeMonthTimes(currentMonthEntries);
+---
+
+<div class="max-w-3xl space-y-5">
+    <h2>{DateTime.now().monthLong} Overview <span class="text-xs font-normal text-stone-700 dark:text-stone-400">({analysis.daysRemaining.toHuman()} left)</span></h2>
+    <p>My goal is to average {dailyGoalAverageSeconds.shiftTo('minutes').toHuman()} per day each month. Here's how I'm doing in {DateTime.now().monthLong}:</p>
+    <div class="space-y-10">
+        <div class="grid sm:grid-cols-3 gap-2">
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                <spam class="text-sm">Total</spam>
+                <span class="text-xl font-bold">{formatDuration(analysis.totalTime)}</span>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                <span class="text-sm">Daily Average</span>
+                <span class="text-xl font-bold">{formatDuration(analysis.averageTime)}</span>
+            </div>
+            {!(analysis.surplus.as('seconds') > 0) && analysis.deficit.as('seconds') < 0 && (
+                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                    <span class="text-sm">Behind</span>
+                    <span class="text-xl font-bold">{formatDuration(analysis.deficit)}</span>
+                </div>
+            )}
+            {analysis.surplus.as('seconds') > 0 && (
+                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                    <span class="text-sm">Ahead</span>
+                    <span class="text-xl font-bold">{formatDuration(analysis.surplus)}</span> 
+                </div>
+            )} 
+        </div>
+    </div>
+</section>
