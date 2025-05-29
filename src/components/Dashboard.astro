@@ -113,7 +113,7 @@ function analyzeMonthTimes(entries: DSEntry[]): MonthAnalysisRes {
     const daysRemaining = Duration.fromObject({ days: daysInMonth - mostRecentDay.getDate()}, { locale: 'en-GB'});
 
     const daysSoFar = mostRecentDay.getDate();
-    const deficit = Duration.fromObject({ seconds: -dailyGoalAverageSeconds.get('seconds') * daysSoFar }, { locale: 'en-GB'}).minus(totalTime);
+    const deficit = Duration.fromObject({ seconds: dailyGoalAverageSeconds.get('seconds') * daysSoFar }, { locale: 'en-GB'}).minus(totalTime);
     const surplus = totalTime.minus(Duration.fromObject({ seconds: dailyGoalAverageSeconds.get('seconds') * daysSoFar }, { locale: 'en-GB'}));
 
     return {
@@ -148,7 +148,7 @@ const analysis = analyzeMonthTimes(currentMonthEntries);
                 <span class="text-sm">Daily Average</span>
                 <span class="text-xl font-bold">{formatDuration(analysis.averageTime)}</span>
             </div>
-            {!(analysis.surplus.as('seconds') > 0) && analysis.deficit.as('seconds') < 0 && (
+            {!(analysis.surplus.as('seconds') > 0) && analysis.deficit.as('seconds') > 0 && (
                 <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
                     <span class="text-sm">Behind</span>
                     <span class="text-xl font-bold">{formatDuration(analysis.deficit)}</span>
