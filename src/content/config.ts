@@ -41,4 +41,24 @@ const spanish = defineCollection({
   })
 });
 
-export const collections = { post, job, spanish, };
+const book = defineCollection({
+  type: 'content',
+  schema: z.object({
+    authors: z.array(z.string()),
+    title: z.string(),
+    headline: z.string(),
+    image_url: z.string(),
+    date_published: z.date(),
+    date_started: z.date(),
+    date_finished: z.date().nullable(),
+    rating: z.number().nullable(),
+    genres: z.array(z.string()),
+    format: z.string(),
+    language: z.string(),
+    original_language: z.string(),
+    translators: z.array(z.string()).nullable(),
+    word_count: z.number(),
+  })
+});
+
+export const collections = { post, job, spanish, book };
