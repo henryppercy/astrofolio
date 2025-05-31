@@ -1,0 +1,67 @@
+---
+import { DateTime } from 'luxon';
+import { getCollection } from 'astro:content';
+
+import Book from './Book.astro';
+
+type FinishedBook = typeof books[number] & {
+  data: typeof books[number]['data'] & {
+    date_finished: DateTime;
+  };
+};
+
+type BooksByYear = {
+  [year: number]: FinishedBook[];
+};
+
+const bookCollection = await getCollection('book');
+const books = bookCollection.map(book => ({
+    ...book,
+    data: {
+        ...book.data,
+        date_published: DateTime.fromJSDate(book.data.date_published),
+        date_started: DateTime.fromJSDate(book.data.date_started),
+        date_finished: book.data.date_finished ? DateTime.fromJSDate(book.data.date_finished) : null,
+    }
+}));
+
+const currentlyReading = books.filter(book => !book.data.date_finished);
+const finishedBooks: FinishedBook[] = books.filter(
+    (book): book is FinishedBook => !!book.data.date_finished
+);
+
+const booksByYear: BooksByYear = {};
+
+for (const book of finishedBooks) {
+    if (book.data?.date_finished) {
+        const year = book.data.date_finished.year;
+        if (!booksByYear[year]) booksByYear[year] = [];
+        booksByYear[year].push(book);
+    }
+}
+---
+
+<div class="not-prose">
+    <div class="col-span-full">
+        <h2 class="text-2xl font-bold mt-8 mb-4">Currently Reading</h2>
+        <ul class="space-y-4">
+            {currentlyReading.map(book => <Book book={book} />)} 
+        </ul>
+    </div>
+    {
+        Object.keys(booksByYear)
+            .sort((a, b) => Number(b) - Number(a))
+            .map(year => {
+                return (
+                    <div class="col-span-full">
+                        <h2 class="text-2xl font-bold mt-8 mb-4">{year}</h2>
+                        <ul class="space-y-4">
+                            {booksByYear[Number(year)]
+                                .sort((a, b) => b.data.date_finished.toMillis() - a.data.date_finished.toMillis())
+                                .map(book => <Book book={book} />)} 
+                        </ul>
+                    </div>
+                );
+            })
+    }
+</div>
