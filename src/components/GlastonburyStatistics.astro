@@ -135,8 +135,8 @@ const actsPerDay: Record<'Friday' | 'Saturday' | 'Sunday', number> = {
                             <p class="text-sm mt-1">{artist.data.disambiguation}</p>
                             <div class="flex items-center gap-x-2 text-xs/5 text-stone-500">
                                 <p class="whitespace-nowrap m-0">{DateTime.fromISO(artist.data.start_datetime).toFormat('ff')}</p>
-                                    <svg viewBox="0 0 2 2" class="size-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
-                                <p class="m-0">{artist.data.tags.splice(0, 3).join(', ')}</p>
+                                <svg viewBox="0 0 2 2" class="size-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
+                                <p class="m-0 truncate max-sm:max-w-[9rem] overflow-hidden whitespace-nowrap">{artist.data.tags.slice(0, 3).join(', ')}</p>
                             </div>
                         </div>
                         <Badge color={
