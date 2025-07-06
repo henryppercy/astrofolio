@@ -61,4 +61,22 @@ const book = defineCollection({
   })
 });
 
-export const collections = { post, job, spanish, book };
+const artist = defineCollection({
+  type: 'content',
+  schema: z.object({
+    id: z.string(),
+    name: z.string(),
+    tags: z.array(z.string()),
+    type: z.string(),
+    disambiguation: z.string(),
+    gender: z.string().optional(),
+    country: z.string(),
+    rating: z.number(),
+    music_rating: z.string(),
+    atmosphere_rating: z.string(),
+    start_datetime: z.string().datetime(),
+    end_datetime: z.string().datetime(),
+  })
+});
+
+export const collections = { post, job, spanish, book, artist };

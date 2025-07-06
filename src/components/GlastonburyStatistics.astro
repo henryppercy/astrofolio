@@ -1,0 +1,156 @@
+---
+import { getCollection } from 'astro:content';
+import Badge from '../components/Badge.astro';
+
+import { DateTime } from 'luxon';
+
+const thursSteps = 28148;
+const thursKMs = 23.7;
+const friSteps = 25408;
+const friKMs = 21.4;
+const satSteps = 27734;
+const satKMs = 23.3;
+const sunSteps = 40633;
+const sunKMs = 34.3;
+
+const totalSteps = thursSteps + friSteps + satSteps + sunSteps;
+const totalKMs = thursKMs + friKMs + satKMs + sunKMs;
+
+const artistCollection = await getCollection('artist');
+function getAdjustedDay(dateStr: string): number {
+	const date = new Date(dateStr);
+	const hour = date.getHours();
+
+	if (hour < 5) {
+		date.setDate(date.getDate() - 1);
+	}
+	return date.getDay();
+}
+
+const days = {
+	Friday: artistCollection.filter(artist => getAdjustedDay(artist.data.start_datetime) === 5),
+	Saturday: artistCollection.filter(artist => getAdjustedDay(artist.data.start_datetime) === 6),
+	Sunday: artistCollection.filter(artist => getAdjustedDay(artist.data.start_datetime) === 0)
+};
+
+const genreCounts: Record<string, number> = {};
+artistCollection.forEach(artist => {
+	if (artist.data.tags) {
+		artist.data.tags.forEach(tag => {
+			genreCounts[tag] = (genreCounts[tag] || 0) + 1;
+		});
+	}
+});
+
+const topGenres = Object.entries(genreCounts)
+	.sort((a, b) => b[1] - a[1])
+	.slice(0, 5)
+	.map(([genre, count]) => ({ genre, count }));
+
+const topArtists = artistCollection
+	.sort((a, b) => b.data.rating - a.data.rating)
+	.slice(0, 5)
+	.map(artist => ({ name: artist.data.name, rating: artist.data.rating }));
+
+const actsPerDay = {
+	Friday: days.Friday.length,
+	Saturday: days.Saturday.length,
+	Sunday: days.Sunday.length
+};
+---
+
+<div>
+    <h2>Weekend Statistics</h2>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="flex flex-col items-center bg-stone-100 dark:bg-stone-900 p-4 rounded-xl shadow-sm">
+            <span class="text-2xl font-extrabold text-stone-900 dark:text-white">{artistCollection.length}</span>
+            <span class="text-xs uppercase tracking-wide text-stone-500 mt-1">Acts</span>
+        </div>
+        <div class="flex flex-col items-center bg-stone-100 dark:bg-stone-900 p-4 rounded-xl shadow-sm">
+            <span class="text-2xl font-extrabold text-stone-900 dark:text-white">{totalSteps.toLocaleString()}</span>
+            <span class="text-xs uppercase tracking-wide text-stone-500 mt-1">Steps</span>
+        </div>
+        <div class="flex flex-col items-center bg-stone-100 dark:bg-stone-900 p-4 rounded-xl shadow-sm">
+            <span class="text-2xl font-extrabold text-stone-900 dark:text-white">{totalKMs.toFixed(1)}</span>
+            <span class="text-xs uppercase tracking-wide text-stone-500 mt-1">Kilometres</span>
+        </div>
+        <div class="flex flex-col items-center bg-stone-100 dark:bg-stone-900 p-4 rounded-xl shadow-sm">
+            <span class="text-2xl font-extrabold text-stone-900 dark:text-white">0</span>
+            <span class="text-xs uppercase tracking-wide text-stone-500 mt-1">Showers</span>
+        </div>
+    </div>
+</div>
+
+<div class="md:grid md:grid-cols-2 md:gap-x-10">
+    <div>
+        <h2>Genres</h2>
+        <ol class="not-prose space-y-1">
+            {topGenres.map(({ genre, count }, idx) => (
+                <li class="font-medium inline-flex justify-between w-full items-baseline gap-4 sm:inline-flex sm:gap-5">
+                    <span class="flex-none font-mono text-xs tabular-nums">{idx + 1}.</span>
+                    <p class="flex-none">{genre.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}</p>
+                    <span class="m-0 flex-1 border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
+                    <span class="flex-none font-mono text-xs tabular-nums">
+                        {count}
+                    </span>
+                </li>
+            ))}
+        </ol>
+    </div>
+
+    <div>
+        <h2>Artists</h2>
+        <ol class="not-prose space-y-1">
+            {topArtists.map(({ name, rating }, idx) => (
+                <li class="font-medium inline-flex justify-between w-full items-baseline gap-4 sm:inline-flex sm:gap-5">
+                    <span class="flex-none font-mono text-xs tabular-nums">{idx + 1}.</span>
+                    <p class="flex-none">{name}</p>
+                    <span class="m-0 flex-1 border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
+                    <span class="flex-none font-mono text-xs tabular-nums">
+                        {rating < 10 ? rating.toFixed(1) : rating}
+                    </span>
+                </li>
+            ))}
+        </ol>
+    </div>
+</div>
+
+
+{Object.entries(days).map(([day, artists]) => (
+    <>
+        <div class="border-b border-stone-200 mb-5">
+            <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
+                <h2 class="mb-0 font-semibold">{day}</h2>
+                <p class="mb-0 truncate text-xs">({actsPerDay[day]})</p>
+            </div>
+        </div>
+
+        <div class="divide-y divide-stone-200 dark:divide-stone-700">
+            {artists
+                .sort((a, b) => Number(new Date(a.data.start_datetime)) - Number(new Date(b.data.start_datetime)))
+                .map((artist) => (
+                    <div class="flex justify-between items-center py-3 gap-x-4">
+                        <div>
+                            <h3 class="m-0">{artist.data.name} <span class="text-xs">({artist.data.country})</span></h3>
+                            <p class="text-sm mt-1">{artist.data.disambiguation}</p>
+                            <div class="flex items-center gap-x-2 text-xs/5 text-stone-500">
+                                <p class="whitespace-nowrap m-0">{DateTime.fromISO(artist.data.start_datetime).toFormat('ff')}</p>
+                                    <svg viewBox="0 0 2 2" class="size-0.5 fill-current"><circle cx="1" cy="1" r="1" /></svg>
+                                <p class="m-0">{artist.data.tags.splice(0, 3).join(', ')}</p>
+                            </div>
+                        </div>
+                        <Badge color={
+                            artist.data.rating >= 8 ? "green"
+                            : artist.data.rating >= 7 ? "lime"
+                            : artist.data.rating >= 5 ? "orange"
+                            : artist.data.rating >= 4 ? "yellow"
+                            : "red"
+                        }>
+                            {artist.data.rating < 10 ? artist.data.rating.toFixed(1) : artist.data.rating}
+                        </Badge>
+                    </div>
+                ))
+            }
+        </div>
+    </>
+))}

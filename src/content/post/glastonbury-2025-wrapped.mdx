@@ -1,0 +1,28 @@
+---
+title: "Glastonbury 2025: Wrapped"
+publishDate: "2025-07-06"
+author: "Henry Percy"
+published: true
+readTime: 10
+description: "At the end of June 2025 I want to my first Glastonbury. To reflect on the weekend I wanted to pull together some stats and insights from the acts I saw and the time spent there."
+tags:
+  - "JavaScript"
+  - "MusicBrainz"
+  - "MDX"
+  - "Scripting"
+  - "Glastonbury"
+  - "Music"
+  - "Festival"
+  - "Review"
+  - "2025"
+---
+
+import GlastonburyStatistics from '../../components/GlastonburyStatistics.astro';
+
+At the end of June 2025 I want to my first Glastonbury. To reflect on the weekend I wanted to pull together some stats and insights from the acts I saw and the time spent there.
+
+To put this together I used data from <a href="https://musicbrainz.org/doc/About">MusicBrainz</a>, which is a community-maintained open music encyclopedia that collects music metadata and makes it available to the public. I wrote a JavaScript program using their <a href="https://musicbrainz.org/doc/MusicBrainz_API">API</a> to generate the <a href="https://mdxjs.com/">MDX</a> files used to display the artist information below. AI was used to fill out any missing data.
+
+Ratings are based on the atmosphere, performance, and of course the music. The other big factor was also my subjective experience of the set. Plus points for Sir Ian McKellen's appearance at Scissor Sisters. Minus points for sound issues at Inhaler.
+
+<GlastonburyStatistics />
