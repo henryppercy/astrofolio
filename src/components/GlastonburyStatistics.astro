@@ -52,10 +52,10 @@ const topArtists = artistCollection
 	.slice(0, 5)
 	.map(artist => ({ name: artist.data.name, rating: artist.data.rating }));
 
-const actsPerDay = {
-	Friday: days.Friday.length,
-	Saturday: days.Saturday.length,
-	Sunday: days.Sunday.length
+const actsPerDay: Record<'Friday' | 'Saturday' | 'Sunday', number> = {
+    Friday: days.Friday.length,
+    Saturday: days.Saturday.length,
+    Sunday: days.Sunday.length
 };
 ---
 
@@ -121,7 +121,7 @@ const actsPerDay = {
         <div class="border-b border-stone-200 mb-5">
             <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
                 <h2 class="mb-0 font-semibold">{day}</h2>
-                <p class="mb-0 truncate text-xs">({actsPerDay[day]})</p>
+                <p class="mb-0 truncate text-xs">({actsPerDay[day as 'Friday' | 'Saturday' | 'Sunday']})</p>
             </div>
         </div>
 
