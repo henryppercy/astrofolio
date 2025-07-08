@@ -12,16 +12,34 @@ export const prerender = true;
 	<main>
 		<section class="prose prose-stone dark:prose-invert max-w-3xl">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Spanish</h1>
-			<p>I am currently learning Spanish using <a href="https://en.wikipedia.org/wiki/Input_hypothesis">comprehensible input</a> via <a href="https://www.dreamingspanish.com/">Dreaming Spanish</a>.</p>
+			<p>I am currently learning Spanish using <a href="https://en.wikipedia.org/wiki/Input_hypothesis">comprehensible input</a> via <a href="https://www.dreamingspanish.com/">Dreaming Spanish</a>. There are 7 milestones defined by Dreaming Spanish at intervals between 0 and 1,500 hours.</p>
+			<p>This is my current progress and estimated pace toward the next milestone.</p>
 			<SpanishDashboard server:defer>
-				<div class="max-w-3xl space-y-5 animate-pulse" slot="fallback">
+				<div class="max-w-3xl animate-pulse" slot="fallback">
+					<div class="space-y-10">
+						<div class="grid sm:grid-cols-3 gap-3 sm:gap-2">
+						<div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
+							<div class="h-4 w-16 bg-stone-300 dark:bg-stone-700 rounded"></div>
+							<div class="h-6 w-24 bg-stone-300 dark:bg-stone-700 rounded"></div>
+						</div>
+						<div class="flex flex-col items-center justify-center gap-y-2 bg-stone-200 dark:bg-stone-900 py-3 rounded-lg">
+							<div class="h-4 w-20 bg-stone-300 dark:bg-stone-700 rounded"></div>
+							<div class="h-6 w-24 bg-stone-300 dark:bg-stone-700 rounded"></div>
+						</div>
+						<div class="flex flex-col items-center justify-center gap-y-2 bg-stone-200 dark:bg-stone-900 py-3 rounded-lg">
+							<div class="h-4 w-14 bg-stone-300 dark:bg-stone-700 rounded"></div>
+							<div class="h-6 w-24 bg-stone-300 dark:bg-stone-700 rounded"></div>
+						</div>
+						</div>
+					</div>
+
 					<h2 class="h-6 w-32 bg-stone-300 dark:bg-stone-700 rounded"></h2>
 					<p class="h-4 w-full bg-stone-200 dark:bg-stone-800 rounded"></p>
 					<p class="h-4 w-56 bg-stone-200 dark:bg-stone-800 rounded"></p>
 
 					<div class="space-y-10">
-						<div class="grid sm:grid-cols-3 gap-2">
-						<div class="flex flex-col items-center justify-center gap-y-2 bg-stone-200 dark:bg-stone-900 py-3 rounded-lg">
+						<div class="grid sm:grid-cols-3 gap-3 sm:gap-2">
+						<div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
 							<div class="h-4 w-16 bg-stone-300 dark:bg-stone-700 rounded"></div>
 							<div class="h-6 w-24 bg-stone-300 dark:bg-stone-700 rounded"></div>
 						</div>
@@ -39,7 +57,7 @@ export const prerender = true;
 			</SpanishDashboard>
 
 			<h2>Progress Updates</h2>
-			<p>There are 7 milestones defined by Dreaming Spanish at intervals between 0 and 1,500 hours. These are my reflections on the progress I've made at each one.</p>
+			<p>I am keeping a record of my learning at each milestone. These are my thoughts and reflections on the progress I've made at each one.</p>
 			<ul class="not-prose space-y-4 mt-10">
 				{spanish
 					.sort((a, b) => a.data.hours - b.data.hours)

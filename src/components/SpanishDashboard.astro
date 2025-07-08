@@ -6,6 +6,8 @@ const goalSeconds = import.meta.env.DS_AVERAGE_GOAL_SECONDS;
 const URL = 'https://www.dreamingspanish.com/.netlify/functions/dayWatchedTime';
 const dailyGoalAverageSeconds = Duration.fromObject({ seconds: goalSeconds });
 
+const MILESTONE_HOURS = [0, 50, 100, 300, 600, 1000, 1500];
+
 function formatDuration(d: Duration): string {
     const isNegative = d.as('seconds') < 0;
     let absDuration = d;
@@ -24,6 +26,45 @@ function formatDuration(d: Duration): string {
     });
 
     return isNegative ? `-${human}` : human;
+}
+
+function formatDurationHours(d: Duration): string {
+    const isNegative = d.as('seconds') < 0;
+    let absDuration = d;
+    if (isNegative) {
+        absDuration = d.negate();
+    }
+
+    const shifted = absDuration.shiftTo('hours');
+    const human = shifted.toHuman({
+        maximumFractionDigits: 0,
+        unitDisplay: 'short',
+        listStyle: 'narrow',
+    });
+
+    return isNegative ? `-${human}` : human;
+}
+
+function getHoursTilNextMilestone(d: Duration): string {
+    const currentHours = d.as('hours');
+    const nextMilestone = MILESTONE_HOURS.find(m => m > currentHours);
+
+    if (nextMilestone === undefined) return 'N/A';
+    const hoursRemaining = nextMilestone - currentHours;
+    return `${hoursRemaining.toFixed(0)} hrs`;
+}
+
+function getEstimatedDateNextMilestone(d: Duration, dailyAverage: Duration): string {
+    const currentHours = d.as('hours');
+    const nextMilestone = MILESTONE_HOURS.find(m => m > currentHours);
+    
+    if (nextMilestone === undefined || dailyAverage.as('hours') === 0) return 'N/A';
+
+    const hoursRemaining = nextMilestone - currentHours;
+    const daysRemaining = hoursRemaining / dailyAverage.as('hours');
+    const estimatedDate = DateTime.now().plus({ days: daysRemaining });
+
+    return estimatedDate.toFormat('DD');
 }
 
 type DSEntry = {
@@ -84,6 +125,11 @@ async function fetchDSTimes(URL: string, bearerToken: string): Promise<DSEntry[]
     }
 }
 
+function getTotalTime(entries: DSEntry[]): Duration {
+    const totalSeconds = entries.reduce((acc, entry) => acc + entry.timeSeconds, 0);
+    return Duration.fromObject({ seconds: totalSeconds }, { locale: 'en-GB' });
+}
+
 function getMonthsTime(entries: DSEntry[], year: number, month: number): DSEntry[] {
     return entries.filter(entry => {
         const date = DateTime.fromISO(entry.date);
@@ -127,6 +173,8 @@ function analyzeMonthTimes(entries: DSEntry[]): MonthAnalysisRes {
 
 const entries: DSEntry[] = await fetchDSTimes(URL, bearerToken);
 
+const totalTime = getTotalTime(entries);
+
 const today = new Date();
 const currentMonth = today.getMonth() + 1;
 const currentYear = today.getFullYear();
@@ -135,27 +183,43 @@ const currentMonthEntries = getMonthsTime(entries, currentYear, currentMonth);
 const analysis = analyzeMonthTimes(currentMonthEntries);
 ---
 
-<div class="max-w-3xl space-y-5">
-    <h2>{DateTime.now().monthLong} Overview</h2>
+<div class="max-w-3xl">
+    <div class="space-y-10">
+        <div class="grid sm:grid-cols-3 gap-3 sm:gap-2">
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
+                <spam class="text-sm">Total</spam>
+                <span class="text-xl font-bold">{formatDurationHours(totalTime)}</span>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
+                <span class="text-sm">Until Next Milestone</span>
+                <span class="text-xl font-bold">{getHoursTilNextMilestone(totalTime)}</span>
+            </div>
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
+                <span class="text-sm">Estimated Arrival</span>
+                <span class="text-xl font-bold">{getEstimatedDateNextMilestone(totalTime, analysis.averageTime)}</span>
+            </div>
+        </div>
+    </div>
+    <h2 class="mb-5">{DateTime.now().monthLong} Overview</h2>
     <p>My goal is to average {dailyGoalAverageSeconds.shiftTo('minutes').toHuman()} per day each month. Here's how I'm doing in {DateTime.now().monthLong} with {analysis.daysRemaining.toHuman()} left.</p>
     <div class="space-y-10">
-        <div class="grid sm:grid-cols-3 gap-2">
-            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+        <div class="grid sm:grid-cols-3 gap-3 sm:gap-2">
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
                 <spam class="text-sm">Total</spam>
                 <span class="text-xl font-bold">{formatDuration(analysis.totalTime)}</span>
             </div>
-            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+            <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
                 <span class="text-sm">Daily Average</span>
                 <span class="text-xl font-bold">{formatDuration(analysis.averageTime)}</span>
             </div>
             {!(analysis.surplus.as('seconds') > 0) && analysis.deficit.as('seconds') > 0 && (
-                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
                     <span class="text-sm">Behind</span>
                     <span class="text-xl font-bold">{formatDuration(analysis.deficit)}</span>
                 </div>
             )}
             {analysis.surplus.as('seconds') > 0 && (
-                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-1 rounded-lg">
+                <div class="flex flex-col items-center justify-center gap-y-1 bg-stone-200 dark:bg-stone-900 py-2 rounded-lg">
                     <span class="text-sm">Ahead</span>
                     <span class="text-xl font-bold">{formatDuration(analysis.surplus)}</span> 
                 </div>
