@@ -4,6 +4,8 @@ import Layout from '../../layouts/Layout.astro';
 
 import { getCollection } from 'astro:content';
 const spanish = await getCollection('spanish');
+
+export const prerender = true;
 ---
 
 <Layout title="Spanish | Henry Percy">
