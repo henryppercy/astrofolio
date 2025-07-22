@@ -19,13 +19,20 @@ function formatDuration(d: Duration): string {
         ? absDuration.shiftTo('hours', 'minutes')
         : absDuration.shiftTo('minutes');
 
-    const human = shifted.toHuman({
-        maximumFractionDigits: 0,
-        unitDisplay: 'short',
-        listStyle: 'narrow',
-    });
+    let hours = Math.floor(shifted.hours ?? 0);
+    let minutes = Math.round(shifted.minutes ?? 0);
 
-    return isNegative ? `-${human}` : human;
+    if (minutes === 60) {
+        hours += 1;
+        minutes = 0;
+    }
+
+    const parts: string[] = [];
+    if (hours > 0) parts.push(`${hours} ${hours === 1 ? 'hour' : 'hours'}`);
+    if (minutes > 0 || parts.length === 0) parts.push(`${minutes} ${minutes === 1 ? 'minute' : 'minutes'}`);
+
+    const result = parts.join(', ');
+    return isNegative ? `-${result}` : result;
 }
 
 function formatDurationHours(d: Duration): string {
