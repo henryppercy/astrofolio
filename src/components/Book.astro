@@ -89,7 +89,7 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
             </dd>
         </dl>
         <div class="flex items-center gap-x-2 text-xs/5 text-stone-500 pt-1.5">
-            {book.data.genres.slice(0, 4).map((g, index, arr) => (
+            {(book.data.genres.slice(0, 4) as string[]).map((g, index, arr) => (
                 <>
                     <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{g}</p>
                     {index < arr.length - 1 && (
