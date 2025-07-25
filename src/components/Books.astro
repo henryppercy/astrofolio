@@ -41,11 +41,16 @@ for (const book of finishedBooks) {
 }
 ---
 
-<div class="not-prose">
+<div>
     {!!currentlyReading?.length && 
         <div class="col-span-full">
-            <h2 class="text-2xl font-bold mt-8 mb-4">Currently Reading</h2>
-            <ul class="space-y-4">
+            <div class="border-b border-stone-200">
+                <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
+                    <h2 class="mb-0 font-semibold">Currently Reading</h2>
+                    <p class="mb-0 truncate text-xs">({currentlyReading.length})</p>
+                </div>
+            </div>
+            <ul class="divide-y divide-stone-200 dark:divide-stone-700 p-0 -my-2">
                 {currentlyReading.map(book => <Book book={book} />)} 
             </ul>
         </div>
@@ -56,8 +61,13 @@ for (const book of finishedBooks) {
             .map(year => {
                 return (
                     <div class="col-span-full">
-                        <h2 class="text-2xl font-bold mt-8 mb-4">{year}</h2>
-                        <ul class="space-y-4">
+                        <div class="border-b border-stone-200">
+                            <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
+                                <h2 class="mb-0 font-semibold">{year}</h2>
+                                <p class="mb-0 truncate text-xs">({booksByYear[Number(year)].length})</p>
+                            </div>
+                        </div>
+                        <ul class="divide-y divide-stone-200 dark:divide-stone-700 p-0 -my-2">
                             {booksByYear[Number(year)]
                                 .sort((a, b) => b.data.date_finished.toMillis() - a.data.date_finished.toMillis())
                                 .map(book => <Book book={book} />)} 

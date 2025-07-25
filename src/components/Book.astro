@@ -1,4 +1,5 @@
 ---
+import Badge from './Badge.astro';
 import type { DateTime } from "luxon";
 
 const { book } = Astro.props;
@@ -18,42 +19,59 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
 }
 ---
 
-<li class="grid grid-cols-1 sm:grid-cols-[250px_1fr] items-start bg-neutral-200 dark:bg-neutral-800 rounded group">
+<li class="grid grid-cols-1 sm:grid-cols-[150px_1fr] items-start rounded max-sm:gap-y-6 group py-8 px-0">
     <div class="flex items-center justify-center h-full">
         <img
             src={book.data.image_url}
             alt={book.data.title}
-            class="block h-full w-full object-fit max-sm:rounded-t sm:rounded-l"
+            class="block h-full w-full object-fit max-sm:rounded sm:rounded not-prose"
         />
     </div>
-    <div class="space-y-4 py-4 px-6">
-        <div class="flex justify-between items-center mb-4 pb-4 border-b border-neutral-300 dark:border-neutral-700 gap-x-8">
-            <div class="space-y-0.5">
-                <div class="font-bold flex gap-x-2 items-baseline text-balance">
-                    {book.data.title}
+    <div class="space-y-4 sm:pl-6 flex flex-col justify-between h-full">
+        <div>
+            <div class="flex justify-between">
+                <div>
+                    <h3 class="font-bold flex gap-x-2 items-baseline text-balance m-0">
+                        {book.data.title}
+                    </h3>
+                    <p class="text-sm">
+                        {book.data.authors.join(', ')}
+                        {book.data.translators?.length > 0 && (
+                            <span class="ml-2 text-xs text-neutral-500">
+                                (Translators: {book.data.translators.join(', ')})
+                            </span>
+                        )}
+                    </p>
                 </div>
-                {book.data.headline && (
-                    <div class="text-xs text-neutral-600 dark:text-neutral-400">
-                        {book.data.headline}
+                {book.data.rating && 
+                    <div class="mt-1">
+                        <Badge
+                            color={
+                                book.data.rating >= 5 ? "green"
+                                : book.data.rating >= 4 ? "lime"
+                                : book.data.rating >= 3 ? "orange"
+                                : book.data.rating >= 2 ? "yellow"
+                                : "red"
+                            }
+                        >
+                            {book.data.rating}
+                        </Badge>
                     </div>
-                )}
-                <div class="text-sm">
-                    {book.data.authors.join(', ')}
-                    {book.data.translators?.length > 0 && (
-                        <span class="ml-2 text-xs text-neutral-500">
-                            (Translators: {book.data.translators.join(', ')})
-                        </span>
-                    )}
-                </div>
+                }
             </div>
+                {book.data.headline && (
+                    <p class="text-sm text-neutral-600 dark:text-neutral-400 m-0">
+                        {book.data.headline}
+                    </p>
+                )}
         </div>
-        <dl class="grid sm:grid-cols-[max-content_1fr] gap-x-4 gap-y-1 text-sm md:text-xs">
-            <dd class="font-semibold">Started at</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
+        <dl class="grid sm:grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm md:text-xs">
+            <dt class="m-0 font-semibold">Start Date</dt>
+            <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
                 {book.data.date_started ? formatDate(book.data.date_started) : '—'}
-            </dt>
-            <dd class="font-semibold">Finished at</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
+            </dd>
+            <dt class="m-0 font-semibold">Finish Date</dt>
+            <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
                 {book.data.date_finished ? (
                     <>
                         {formatDate(book.data.date_finished)}
@@ -62,51 +80,15 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                         )}
                     </>
                 ) : '—'}
-            </dt>
-            <dd class="font-semibold">Release date</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
+            </dd>
+            <dt class="m-0 font-semibold">Release date</dt>
+            <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
                 {book.data.date_published ? formatDate(book.data.date_published) : '—'}
-            </dt>
-            <dd class="font-semibold">Word count</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
-                {book.data.word_count ? book.data.word_count.toLocaleString() : '—'}
-            </dt>
-            <dd class="font-semibold">Pace</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
-                {getPace(book.data.date_started, book.data.date_finished, book.data.word_count) ? `${getPace(book.data.date_started, book.data.date_finished, book.data.word_count)} words per day` : '—'}
-            </dt>
-            <dd class="font-semibold">Rating</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400 flex items-center gap-2">
-                {book.data.rating ? (
-                    <>
-                        <span class="flex items-center gap-1 text-yellow-500">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                                <svg xmlns="http://www.w3.org/2000/svg" fill={i < Math.round(book.data.rating) ? "currentColor" : "none"} viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width={2} d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-                                </svg>
-                            ))}
-                        </span>
-                    </>
-                ) : '—'}
-            </dt>
-            <dd class="font-semibold">Format</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
-                {book.data.format}
-            </dt>
-            <dd class="font-semibold">Language</dd>
-            <dt class="tabular-nums text-neutral-600 dark:text-neutral-400">
-                {book.data.language}
-            </dt>
-            {book.data.genres?.length > 0 && (
-                <>
-                    <dd class="font-semibold">Genres</dd>
-                    <dt class="tabular-nums text-neutral-600 dark:text-neutral-400 flex flex-wrap gap-2">
-                        {book.data.genres.map((genre: string) => (
-                            <span class="bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 px-2 py-0.5 rounded">{genre}</span>
-                        ))}
-                    </dt>
-                </>
-            )}
+            </dd>
+            <dt class="m-0 font-semibold">Word count</dt>
+            <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
+                {book.data.word_count ? book.data.word_count.toLocaleString() : '—'} {book.data.date_finished && <span>({getPace(book.data.date_started, book.data.date_finished, book.data.word_count) ? `${getPace(book.data.date_started, book.data.date_finished, book.data.word_count)} words per day` : '—'})</span>}
+            </dd>
         </dl>
     </div>
 </li>
