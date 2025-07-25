@@ -27,44 +27,42 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
             class="block h-full w-full object-fit max-sm:rounded sm:rounded not-prose"
         />
     </div>
-    <div class="space-y-4 sm:pl-6 flex flex-col justify-between h-full">
-        <div>
-            <div class="flex justify-between">
-                <div>
-                    <h3 class="font-bold flex gap-x-2 items-baseline text-balance m-0">
-                        {book.data.title}
-                    </h3>
-                    <p class="text-sm">
-                        {book.data.authors.join(', ')}
-                        {book.data.translators?.length > 0 && (
-                            <span class="ml-2 text-xs text-neutral-500">
-                                (Translators: {book.data.translators.join(', ')})
-                            </span>
-                        )}
-                    </p>
-                </div>
-                {book.data.rating && 
-                    <div class="mt-1">
-                        <Badge
-                            color={
-                                book.data.rating >= 5 ? "green"
-                                : book.data.rating >= 4 ? "lime"
-                                : book.data.rating >= 3 ? "orange"
-                                : book.data.rating >= 2 ? "yellow"
-                                : "red"
-                            }
-                        >
-                            {book.data.rating}
-                        </Badge>
-                    </div>
-                }
+    <div class="sm:pl-6 flex flex-col justify-between h-full">
+        <div class="flex justify-between">
+            <div>
+                <h3 class="font-bold flex gap-x-2 items-baseline text-pretty m-0">
+                    {book.data.title}
+                </h3>
+                <p class="text-sm">
+                    {book.data.authors.join(', ')}
+                    {book.data.translators?.length > 0 && (
+                        <span class="ml-2 text-xs text-neutral-500">
+                            ({book.data.translators.length > 1 ? 'Translators' : 'Translator'}: {book.data.translators.join(', ')})
+                        </span>
+                    )}
+                </p>
             </div>
-                {book.data.headline && (
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400 m-0">
-                        {book.data.headline}
-                    </p>
-                )}
+            {book.data.rating && 
+                <div class="mt-1">
+                    <Badge
+                        color={
+                            book.data.rating >= 5 ? "green"
+                            : book.data.rating >= 4 ? "lime"
+                            : book.data.rating >= 3 ? "orange"
+                            : book.data.rating >= 2 ? "yellow"
+                            : "red"
+                        }
+                    >
+                        {book.data.rating}
+                    </Badge>
+                </div>
+            }
         </div>
+        {book.data.headline && (
+            <p class="text-sm text-neutral-600 dark:text-neutral-400 m-0">
+                {book.data.headline}
+            </p>
+        )}
         <dl class="grid sm:grid-cols-[max-content_1fr] gap-x-4 gap-y-2 text-sm md:text-xs">
             <dt class="m-0 font-semibold">Start Date</dt>
             <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
@@ -90,5 +88,17 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                 {book.data.word_count ? book.data.word_count.toLocaleString() : '—'} {book.data.date_finished && <span>({getPace(book.data.date_started, book.data.date_finished, book.data.word_count) ? `${getPace(book.data.date_started, book.data.date_finished, book.data.word_count)} words per day` : '—'})</span>}
             </dd>
         </dl>
+        <div class="flex items-center gap-x-2 text-xs/5 text-stone-500 pt-1.5">
+            {book.data.genres.slice(0, 4).map((g, index, arr) => (
+                <>
+                    <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{g}</p>
+                    {index < arr.length - 1 && (
+                        <svg viewBox="0 0 2 2" class="size-0.5 fill-current">
+                            <circle cx="1" cy="1" r="1" />
+                        </svg>
+                    )}
+                </>
+            ))}
+        </div>
     </div>
 </li>
