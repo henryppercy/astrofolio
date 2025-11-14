@@ -9,14 +9,14 @@ const posts = await getCollection('post');
 
 <Layout title="Posts | Henry Percy">
 	<main>
-		<section class="prose prose-stone dark:prose-invert max-w-3xl">
+		<section class="prose prose-stone dark:prose-invert max-w-5xl">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Posts</h1>
 			<p>A collection of notes, things I've learned, or interesting stuff I've found online.</p>
 			<ul class="not-prose space-y-4 mt-10">
 				{posts
 					.filter(post => post.data.published)
 					.sort((a, b) => new Date(b.data.publishDate).getTime() - new Date(a.data.publishDate).getTime())
-					.slice(0, 5)
+					.slice(0, 10)
 					.map(post => (
 						<li>
 							<a href={`posts/${post.slug}`} class="group inline-flex justify-between w-full items-baseline gap-4 sm:inline-flex sm:gap-5">
