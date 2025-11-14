@@ -23,11 +23,12 @@ const fistPathVar = path.split('/').filter(Boolean)[0];
 		<ClientRouter />
 	</head>
 	<body class="transition-all bg-white dark:bg-black min-h-screen min-w-screen">
-		<div class="max-w-5xl mx-auto container">
+		<div class="max-w-4xl mx-auto container">
 			<header class="py-14 md:pb-20 text-stone-700 dark:text-stone-200">
 				<nav class="flex justify-between">
 					<ul class="flex gap-x-4">
 						<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/">home</a>{path === '/' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>
+						<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/slices">slices</a>{fistPathVar === 'slices' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>
 						<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/posts">posts</a>{fistPathVar === 'posts' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>
 						<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/spanish">spanish</a>{fistPathVar === 'spanish' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>
 						<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/books">reading</a>{fistPathVar === 'books' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>

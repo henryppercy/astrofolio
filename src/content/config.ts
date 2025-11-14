@@ -17,6 +17,21 @@ const post = defineCollection({
   })
 });
 
+const slice = defineCollection({
+  type: 'content',
+  schema: z.object({
+		location: z.string(),
+    created_at: z.string().transform((str: string) => new Date(str)),
+    updated_at: z.string().transform((str: string) => new Date(str)).optional(),
+    is_published: z.boolean(),
+    image: z.object({
+      url: z.string(),
+      alt: z.string()
+    }).optional(),
+    tags: z.array(z.string()).optional(),
+  }),
+});
+
 const job = defineCollection({
   type: 'content',
   schema: z.object({
@@ -79,4 +94,4 @@ const artist = defineCollection({
   })
 });
 
-export const collections = { post, job, spanish, book, artist };
+export const collections = { post, job, spanish, book, artist, slice };

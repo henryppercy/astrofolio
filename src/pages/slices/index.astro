@@ -1,0 +1,77 @@
+---
+import { getEntry, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export const prerender = true;
+
+import { getCollection } from 'astro:content';
+const slicesRes = await getCollection('slice');
+
+let slices = [];
+for (const slice of slicesRes) {
+	const entry = await getEntry('slice', slice.slug);
+
+	if (entry) {
+		const { Content } = await render(entry);
+		const sliceContent = { data: slice.data, content: Content, };
+
+		slices.push(sliceContent);
+	}
+}
+
+function formatDate(date: Date) {
+	const month = date.toLocaleString('en-GB', { month: 'short' });
+	const day = date.getDate();
+	const year = date.getFullYear();
+
+	return `${month} ${day} ${year}`;
+}
+
+function formatTimezoneOffset(date: Date) {
+	const offsetMinutes = date.getTimezoneOffset();
+	const sign = offsetMinutes <= 0 ? '+' : '-';
+
+	const absolute = Math.abs(offsetMinutes);
+	const hours = Math.floor(absolute / 60).toString().padStart(2, '0');
+	const minutes = (absolute % 60).toString().padStart(2, '0');
+
+	return `${sign}${hours}:${minutes}`;
+}
+
+function formatTime(date: Date) {
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+
+	return `${hours}:${minutes}`;
+}
+---
+
+<Layout title="Slices | Henry Percy">
+	<main>
+		<section class="prose prose-stone dark:prose-invert max-w-4xl">
+			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Slices</h1>
+			<p>Get a <a href="https://go.dev/ref/spec#Slice_types" target="_blank">slice</a> of my life. A personal feed of my thoughts, notes, and updates.</p>
+			<ul class="divide-y p-0 mt-10">
+				{slices
+					.filter(slice => slice.data.is_published)
+					.sort((a, b) => new Date(b.data.created_at).getTime() - new Date(a.data.created_at).getTime())
+					.slice(0, 10)
+					.map(slice => (
+						<li class="px-0 pt-5 pb-8 list-none">
+							<div class="sm:px-10 sm:grid sm:grid-cols-12 sm:gap-x-6">
+								<div class="sm:col-span-2 mt-1 font-mono text-xs">
+									<p>{formatDate(new Date(slice.data.created_at))}</p>
+									<p>{formatTime(new Date(slice.data.created_at))} (UTC{formatTimezoneOffset(new Date(slice.data.created_at))})</p>
+								</div>
+								<div class="sm:col-start-3 sm:col-span-10 !first:!mt-0">
+									<slice.content />
+								</div>
+							</div>
+							{slice.data.image &&  <img class="object-cover w-full" src={slice.data.image.url} alt={slice.data.image.alt} />}
+						</li>
+					)
+				)}
+			</ul>
+		</section>
+	</main>
+</Layout>
