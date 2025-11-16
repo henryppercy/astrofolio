@@ -50,8 +50,8 @@ function formatTime(date: Date) {
 	<main>
 		<section class="prose prose-stone dark:prose-invert max-w-4xl">
 			<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Slices</h1>
-			<p>Get a <a href="https://go.dev/ref/spec#Slice_types" target="_blank">slice</a> of my life. A personal feed of my thoughts, notes, and updates.</p>
-			<ul class="divide-y p-0 mt-10">
+			<p>Get a <a href="posts/adding-slices" target="_blank">slice</a> of my life. A personal feed of my thoughts, notes, and updates.</p>
+			<ul class="divide-y divide-neutral-400 dark:divide-neutral-600 p-0 mt-10">
 				{slices
 					.filter(slice => slice.data.is_published)
 					.sort((a, b) => new Date(b.data.created_at).getTime() - new Date(a.data.created_at).getTime())
@@ -59,11 +59,12 @@ function formatTime(date: Date) {
 					.map(slice => (
 						<li class="px-0 pt-5 pb-8 list-none">
 							<div class="sm:px-10 sm:grid sm:grid-cols-12 sm:gap-x-6">
-								<div class="sm:col-span-2 mt-1 font-mono text-xs">
+								<div class="sm:col-span-3 mt-1 font-mono text-xs">
 									<p>{formatDate(new Date(slice.data.created_at))}</p>
-									<p>{formatTime(new Date(slice.data.created_at))} (UTC{formatTimezoneOffset(new Date(slice.data.created_at))})</p>
+									<p>{formatTime(new Date(slice.data.created_at))}</p>
+									{/* <p>{formatTime(new Date(slice.data.created_at))} (UTC{formatTimezoneOffset(new Date(slice.data.created_at))})</p> */}
 								</div>
-								<div class="sm:col-start-3 sm:col-span-10 !first:!mt-0">
+								<div class="sm:col-start-4 sm:col-span-9 !first:!mt-0">
 									<slice.content />
 								</div>
 							</div>
