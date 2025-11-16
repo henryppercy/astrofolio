@@ -1,0 +1,86 @@
+---
+location: "London"
+created_at: "2025-11-16T18:15:44+00:00"
+is_published: true
+tags:
+  - "programming"
+  - "projects"
+  - "data visualisation"
+---
+
+import Globe from "../../components/Globe.astro";
+
+I've wanted to try out [D3](https://d3js.org) for a while so I thought I'd try out the `d3-geo` package and map the countries I've visited:
+
+<div class="py-10">
+  <Globe />
+</div>
+
+It was easy to get going with as it can be pulled in via a CDN:
+
+```js
+<script is:inline src="https://d3js.org/d3.v4.min.js"></script>
+
+<div id="map"></div>
+```
+
+This gives you access to `d3` which provides a comprehensive API for creating `svg`:
+
+```js
+let height = 500;
+let width = d3
+  .select("#map")
+  .node()
+  .getBoundingClientRect()
+  .width;
+
+let projection = d3
+  .geoOrthographic()
+  .scale(250)
+  .center([0, 0])
+  .rotate([0, -30])
+  .translate([width / 2, height / 2]);
+
+const initialScale = projection.scale();
+
+let svg = d3
+  .select("#map")
+  .append("svg")
+  .attr("width", width)
+  .attr("height", height);
+```
+
+Once you've created the base `svg` you can begin to append elements to it:
+
+```js
+let globe = svg
+  .append("circle")
+  .attr("fill", "url(#globeGradient)")
+  .attr("stroke", "#d6d3d1")
+  .attr("stroke-width", "0.4")
+  .attr("cx", width / 2)
+  .attr("cy", height / 2)
+  .attr("r", initialScale);
+```
+
+And add functionality via the call method:
+
+```js
+svg.call(
+  d3.drag().on("drag", () => {
+    const rotate = projection.rotate();
+    const k = sensitivity / projection.scale();
+    projection.rotate([
+      rotate[0] + d3.event.dx * k,
+      rotate[1] - d3.event.dy * k,
+    ]);
+    path = d3.geoPath().projection(projection);
+    svg.selectAll("path").attr("d", path);
+  })
+)
+```
+
+And the result is a powerful way to visualise data without needing to get bogged down in the specifics of the implementation.
+
+For more on the underlying implementation see [Rotate the World](https://www.jasondavies.com/maps/rotate) by James Davies.
+
