@@ -1,0 +1,30 @@
+---
+location: "London"
+created_at: "2025-11-19:10:42+48:00"
+is_published: true
+tags:
+  - "programming"
+  - "productivity"
+---
+
+An issue I've had switching to [Aerospace](https://github.com/nikitabobko/AeroSpace) is that typing `#` (on a mac) causes me to switch to workspace 3:
+
+
+```toml title=".aerospace.toml"
+[mode.main.binding]
+    alt-3 = 'workspace 3'
+```
+
+A fix [I came across](https://github.com/nikitabobko/AeroSpace/issues/28#issuecomment-2128438480) was to define an *empty* [binding mode](https://nikitabobko.github.io/AeroSpace/guide#binding-modes). When switching to a new binding mode, all the previous bindings are disabled in favour of the new bindings, allowing me to type `#`.
+
+To get this working I mapped <kbd>Option</kbd> + <kbd>Backspace</kbd> in the main and new mode to toggle between them:
+
+```toml title=".aerospace.toml"
+[mode.main.binding]
+    alt-backspace = 'mode hash'
+
+[mode.hash.binding]
+    alt-backspace = 'mode main'
+```
+
+I think this is currently the best solution but it would be nice to map the left and right modifier keys separately.
