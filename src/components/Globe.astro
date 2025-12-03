@@ -40,8 +40,9 @@ const nonVisitedCountries = countries.features.filter(
 
 <div id="map" class="w-full flex items-center justify-center"></div>
 
-<script is:inline src="https://d3js.org/d3.v4.min.js"></script>
-<script is:inline define:vars={{ visitedCountries, nonVisitedCountries, homeCountry }}>
+<script type="module" define:vars={{ visitedCountries, nonVisitedCountries, homeCountry }}>
+  import * as d3 from "https://cdn.jsdelivr.net/npm/d3@4/+esm";
+  
   let width = d3.select("#map").node().getBoundingClientRect().width;
   let height = 500;
   const sensitivity = 75;
