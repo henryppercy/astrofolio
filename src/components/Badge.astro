@@ -1,6 +1,6 @@
 ---
 export interface Props {
-    color?: "red" | "yellow" | "green" | "lime" | "orange";
+    color?: "red" | "yellow" | "green" | "lime" | "orange" | "emerald";
 }
 const { color = "red" } = Astro.props;
 
@@ -24,6 +24,10 @@ const colorClasses = {
     green: `
         bg-green-200 text-green-800 ring-green-700/30
         dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20
+    `,
+    emerald: `
+        bg-emerald-200 text-emerald-800 ring-emerald-700/30
+        dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20
     `,
 };
 ---

@@ -140,7 +140,8 @@ const actsPerDay: Record<'Friday' | 'Saturday' | 'Sunday', number> = {
                             </div>
                         </div>
                         <Badge color={
-                            artist.data.rating >= 8 ? "green"
+                                artist.data.rating >= 9 ? "emerald"
+                            : artist.data.rating >= 8 ? "green"
                             : artist.data.rating >= 7 ? "lime"
                             : artist.data.rating >= 5 ? "orange"
                             : artist.data.rating >= 4 ? "yellow"
