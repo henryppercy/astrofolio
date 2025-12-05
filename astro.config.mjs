@@ -6,7 +6,7 @@ import netlify from '@astrojs/netlify';
 
 /** @type {import('astro-expressive-code').AstroExpressiveCodeOptions} */
 const astroExpressiveCodeOptions = {
-  themes: ['vitesse-dark', 'vitesse-light'],
+  themes: ['kanagawa-dragon', 'vitesse-light'],
   useDarkModeMediaQuery: false,
   styleOverrides: {
     frames: {
