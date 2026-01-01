@@ -1,0 +1,100 @@
+---
+title: "2026: Goals"
+publishDate: "2026-01-01"
+updatedAt: "2026-01-01"
+author: "Henry Percy"
+published: true
+readTime: 4
+description: "My goals and progress tracking dashboard for 2026."
+tags:
+  - "goals"
+  - "progress"
+  - "2026"
+---
+
+In January 2025 I was thinking about my goals for the year. I set a few goals most years and usually will have stuck to one or two by the end. To improve my hit rate in 2025, I decided to make a dashboard to my track progress towards them. I spent a few hours planning something overly ambitious and gave up on it after a day or two of not making much progress.
+
+This year I had the same thought, but not to make the same mistake in 2026, instead of building out a whole dashboard I thought I'd write my goals here and create a [program](https://github.com/henryppercy/goal-sync) to automatically update the post as I progress.
+
+---
+
+## The Goals 
+
+I can split my goals into 4 categories; Programming, Spanish, Fitness, and Reading. Specifically for this year they are:
+
+- **Programming** - Automate the annoyances
+- **Spanish** - Reach 800 hours of CI
+- **Fitness** - Don't miss a week 
+- **Reading** - Read 12 books
+
+### Programming
+
+I have been struggling to define what my overall goal with programming is this year. With the others it is quite easy to put a number against it and aim for that: "*Read 12 books*". But with programming it is a little more tricky.
+
+I think I could define my aim this year as getting better at solving the small, persistent problems that crop up when writing software.
+
+- Running the same commands each morning to setup my dev environment
+- Wasting time finding undocumented API endpoint definitions
+- Postman keeps failing to find my collections and doesn't integrate well with other tools
+
+These are problems which have cropped up in my day-to-day development experience which could be solved easily by learning and or writing new tools. 
+
+- Write a [CLI tool](https://github.com/henryppercy/tmux-session) to configure a development environment
+- Write a code inspection tool to generate an Open API spec
+- Learn about [curl](https://curl.se), [jq](https://jqlang.org), and their [alternatives](https://httpie.io/cli)/[derivatives](https://github.com/noahgorstein/jqp)
+
+So to turn this into some actionable goals, this year I want to:
+
+1. Complete [Command Line Applications in Go](https://dreamsofcode.io/courses/cli-apps-go) 
+2. Build at least 3 programs using what I have learnt
+
+```zsh
+henry@2026:~/goals/programming/course $ tail runtime.log
+[INFO] course loaded: command-line-applications-in-go
+[INFO] latest module: 5.4 concurrency and streams
+[INFO] status: progress
+
+henry@2026:~/goals/programming/projects $ ls -l
+total 0
+
+```
+
+### Spanish
+
+I am working toward logging 1500 hours of [Spanish comprehensible input](/spanish). In 2025 I logged 310 hours of Spanish which pushed me though the awkward beginner stages and into intermediate.
+
+This year I want to push that even further and reach 800 hours total by 2027. Averaging out to just over an hours per day, this would put me in reach of the advanced level.
+
+```zsh
+henry@2026:~/goals/spanish $ ./progress.sh
+[#################.......................] 350/800 hrs - 43%
+```
+
+### Fitness
+
+I don't have any particular fitness goals aside from being consistent with whatever I do. At my most consistent I usually workout 2-4 times per week, however, I find that if I have something disrupt my routine it falls to 0-1 times per week. A disruption is usually something like a holiday or illness.
+
+So to prevent that I am setting the goal of working out at least once per week, for every week of 2026. I don't care about the size or intensity of the workout, it just needs to be a workout.  
+
+```zsh
+henry@2026:~/goals/fitness $ ./calendar.sh
+
+Wk 00-13:  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  Q1
+Wk 13-26:  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  Q2
+Wk 26-39:  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  Q3
+Wk 39-52:  ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○ ○  Q4
+
+• trained | ○ pending | x missed
+```
+
+### Reading
+
+Unlike the other goals, there is not really any grand end target with reading. I just want to read more. I'm on a screen all day at work, I'm on a screen most of the day before and after work. Any amount of time I can reduce is a win in my book. I read 12 books in 2025 and I want to do the same again this year.
+
+```zsh
+henry@2026:~/goals/reading $ wc -l books_completed.txt
+0 books_completed.txt
+
+henry@2026:~/goals/reading $ tail -n 12 reading_log.txt
+[2026-01-01][OPEN]  Hyperion  Dan Simmons  5d  -
+```
