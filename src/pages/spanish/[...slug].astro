@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Article from '../../components/Article.astro';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -18,25 +19,12 @@ export async function getStaticPaths() {
 const { spanish } = Astro.props;
 const { Content } = await spanish.render();
 
-const date = spanish.data.date_achieved;
-let month, day, year;
-if (date) {
-	month = date.toLocaleString('en-GB', { month: 'long' });
-	day = date.getDate();
-	year = date.getFullYear();
-}
+spanish.data.title = `${spanish.data.hours} Hours`;
+spanish.data.created_at = spanish.data.date_achieved ?? spanish.data.created_at;
 ---
 
 <Layout title={`${spanish.data.hours} Hours | Henry Percy`} description={spanish.data.description ?? ''}>
 	<main class="relative">
-		<article class="space-y-5 prose prose-stone dark:prose-invert max-w-4xl">
-			<div>
-				<h1 class="!mb-2">{spanish.data.hours} Hours</h1>
-				<div>
-					<p class="!mt-0 mb-6 text-stone-400">{`${month}, ${day} ${year}`}</p>
-				</div>
-			</div>
-			<Content />
-		</article>
+		<Article article={{ ...spanish.data, slug: spanish.slug }} Content={Content} />
 	</main>
 </Layout>

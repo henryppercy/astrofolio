@@ -1,20 +1,38 @@
 import { z, defineCollection } from 'astro:content';
 
+export const articleStyleSchema = z.object({
+  title: z.string(),
+  description: z.string().default(''),
+
+  city: z.string(),
+  country: z.string(),
+
+  created_at: z.string().transform((str: string) => new Date(str)),
+  updated_at: z.string().transform((str: string) => new Date(str)).optional(),
+
+  is_published: z.boolean(),
+
+  read_time: z.number().optional(),
+  author: z.string().default('Henry Percy'),
+
+  tags: z.array(z.string()).optional(),
+  image: z.object({
+    url: z.string(),
+    alt: z.string()
+  }).optional(),
+});
+
 const post = defineCollection({
   type: 'content',
-  schema: z.object({
-    title: z.string(),
-    created_at: z.string().transform((str: string) => new Date(str)),
-    updated_at: z.string().transform((str: string) => new Date(str)).optional(),
-    is_published: z.boolean(),
-    description: z.string(),
-    read_time: z.number(),
-    author: z.string().default('Henry Percy'),
-    image: z.object({
-      url: z.string(),
-      alt: z.string()
-    }).optional(),
-    tags: z.array(z.string())
+  schema: articleStyleSchema
+});
+
+const spanish = defineCollection({
+  type: 'content',
+  schema: articleStyleSchema.extend({
+    hours: z.number(),
+    level: z.number(),
+    date_achieved: z.date().nullable(),
   })
 });
 
@@ -43,18 +61,6 @@ const job = defineCollection({
     finish_date: z.string().transform((str: string) => str ? new Date(str) : ""),
     start_date: z.string().transform((str: string) => str ? new Date(str) : ""),
     summary: z.string(),
-  })
-});
-
-const spanish = defineCollection({
-  type: 'content',
-  schema: z.object({
-    hours: z.number(),
-    level: z.number(),
-    title: z.string().nullable(),
-    date_achieved: z.date().nullable(),
-    description: z.string().nullable(),
-    read_time: z.number().nullable(),
   })
 });
 

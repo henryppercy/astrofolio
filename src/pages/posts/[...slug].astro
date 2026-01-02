@@ -1,5 +1,6 @@
 ---
 import Layout from '../../layouts/Layout.astro';
+import Article from '../../components/Article.astro';
 import { getCollection } from 'astro:content';
 
 export const prerender = true;
@@ -14,35 +15,10 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await post.render();
-
-const createdAt = post.data.created_at;
-const createdMonth = createdAt.toLocaleString('en-GB', { month: 'long' });
-const createdDay = createdAt.getDate();
-const createdYear = createdAt.getFullYear();
-
-const updatedAt = post.data.updated_at;
-const updatedMonth = updatedAt?.toLocaleString('en-GB', { month: 'long' });
-const updatedDay = updatedAt?.getDate();
-const updatedYear = updatedAt?.getFullYear();
 ---
 
 <Layout title={`${post.data.title} | Henry Percy`} description={post.data.description}>
   <main class="relative">
-    <article class="space-y-5 prose prose-stone dark:prose-invert max-w-4xl">
-      <div>
-        <h1 transition:name={`post-title-${post.slug}`} class="!mb-2">{post.data.title}</h1>
-        <div>
-          <p class="!mt-0 mb-6 text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`}</p>
-        </div>
-      </div>
-      <Content />
-      { updatedAt && 
-        <footer class="border-stone-200 dark:border-stone-800 pt-8">
-          <p class="text-stone-500 dark:text-stone-400 text-sm">
-            Last updated {updatedMonth} {updatedDay}, {updatedYear}
-          </p>
-        </footer>
-      }
-    </article>
+    <Article article={{ ...post.data, slug: post.slug }} Content={Content} />
   </main>
 </Layout>

@@ -1,0 +1,37 @@
+---
+import { z } from "astro/zod";
+import { articleStyleSchema } from "../content/config";
+
+export interface ArticleProps {
+    article: z.infer<typeof articleStyleSchema> & { slug: string };
+    Content: any;
+}
+
+const { article, Content } = Astro.props as ArticleProps;
+const createdAt = article.created_at;
+const createdMonth = createdAt.toLocaleString('en-GB', { month: 'long' });
+const createdDay = createdAt.getDate();
+const createdYear = createdAt.getFullYear();
+
+const updatedAt = article.updated_at;
+const updatedMonth = updatedAt?.toLocaleString('en-GB', { month: 'long' });
+const updatedDay = updatedAt?.getDate();
+const updatedYear = updatedAt?.getFullYear();
+---
+
+<article class="space-y-5 prose prose-stone dark:prose-invert min-w-full">
+    <div>
+    <h1 transition:name={`article-title-${article.slug}`} class="!mb-2">{article.title}</h1>
+    <div>
+        <p class="!mt-0 mb-6 text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`}</p>
+    </div>
+    </div>
+    <Content />
+    { updatedAt && 
+        <footer class="border-stone-200 dark:border-stone-800 pt-8">
+            <p class="text-stone-500 dark:text-stone-400 text-sm">
+                Last updated {updatedMonth} {updatedDay}, {updatedYear}
+            </p>
+        </footer>
+    }
+</article>
