@@ -4,11 +4,11 @@ const post = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
-    publishDate: z.string().transform((str: string) => new Date(str)),
-    updatedAt: z.string().transform((str: string) => new Date(str)).optional(),
-    published: z.boolean(),
+    created_at: z.string().transform((str: string) => new Date(str)),
+    updated_at: z.string().transform((str: string) => new Date(str)).optional(),
+    is_published: z.boolean(),
     description: z.string(),
-    readTime: z.number(),
+    read_time: z.number(),
     author: z.string().default('Henry Percy'),
     image: z.object({
       url: z.string(),
@@ -21,7 +21,8 @@ const post = defineCollection({
 const slice = defineCollection({
   type: 'content',
   schema: z.object({
-		location: z.string(),
+    city: z.string(),
+    country: z.string(),
     created_at: z.string().transform((str: string) => new Date(str)),
     updated_at: z.string().transform((str: string) => new Date(str)).optional(),
     is_published: z.boolean(),
@@ -37,10 +38,10 @@ const job = defineCollection({
   type: 'content',
   schema: z.object({
     company: z.string(),
-    companyShort: z.string(),
-    jobTitles: z.array(z.string()),
-    finishDate: z.string().transform((str: string) => str ? new Date(str) : ""),
-    startDate: z.string().transform((str: string) => str ? new Date(str) : ""),
+    company_short: z.string(),
+    job_titles: z.array(z.string()),
+    finish_date: z.string().transform((str: string) => str ? new Date(str) : ""),
+    start_date: z.string().transform((str: string) => str ? new Date(str) : ""),
     summary: z.string(),
   })
 });

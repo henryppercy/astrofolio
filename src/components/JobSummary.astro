@@ -7,22 +7,22 @@ const formattedJobs = jobs.map(job => ({
     ...job,
     data: {
         ...job.data,
-        startDate: new Date(job.data.startDate),
-        finishDate: job.data.finishDate ? new Date(job.data.finishDate) : null,
+        start_date: new Date(job.data.start_date),
+        finish_date: job.data.finish_date ? new Date(job.data.finish_date) : null,
     }
 }));
 ---
 <div class="space-y-3">
     {formattedJobs
-        .sort((a, b) => new Date(b.data.startDate).getTime() - new Date(a.data.startDate).getTime())
+        .sort((a, b) => new Date(b.data.start_date).getTime() - new Date(a.data.start_date).getTime())
         .map(job => (
             <details>
                 <summary class="group flex cursor-pointer items-baseline space-x-4">
                     <span class="flex-none font-medium group-hover:text-stone-900 group-hover:dark:text-stone-50 transition-colors">
-                        {job.data.companyShort ? (
+                        {job.data.company_short ? (
                             <>
                                 <span class="hidden md:block">{job.data.company}</span>
-                                <span class="hidden max-md:block">{job.data.companyShort}</span>
+                                <span class="hidden max-md:block">{job.data.company_short}</span>
                             </>
                         ) : (
                             <>
@@ -32,16 +32,16 @@ const formattedJobs = jobs.map(job => ({
                     </span>
                     <span class="w-full flex-shrink border-t border-dashed border-neutral-300 dark:border-neutral-700"></span>
                     <span class="flex-none">
-                        {job.data.jobTitles[0]}
+                        {job.data.job_titles[0]}
                     </span>
                     <span class="flex-none font-mono text-xs tabular-nums">
-                        {job.data.startDate.getFullYear() === job.data.finishDate?.getFullYear() ? (
+                        {job.data.start_date.getFullYear() === job.data.finish_date?.getFullYear() ? (
                             <>
-                                <time datetime={String(job.data.startDate)}>{job.data.startDate.toLocaleDateString('en-US', { year: 'numeric' })}</time><span>&nbsp;&nbsp;&nbsp;</span>
+                                <time datetime={String(job.data.start_date)}>{job.data.start_date.toLocaleDateString('en-US', { year: 'numeric' })}</time><span>&nbsp;&nbsp;&nbsp;</span>
                             </>
                         ) : (
                             <>
-                                <time datetime={String(job.data.startDate)}>{job.data.startDate.toLocaleDateString('en-US', { year: 'numeric' })}</time>-{job.data.finishDate ? (<time datetime={String(job.data.finishDate)}>{(job.data.finishDate).toLocaleDateString('en-US', { year: '2-digit' })}</time>) : (<span>&nbsp;&nbsp;</span>)}
+                                <time datetime={String(job.data.start_date)}>{job.data.start_date.toLocaleDateString('en-US', { year: 'numeric' })}</time>-{job.data.finish_date ? (<time datetime={String(job.data.finish_date)}>{(job.data.finish_date).toLocaleDateString('en-US', { year: '2-digit' })}</time>) : (<span>&nbsp;&nbsp;</span>)}
                             </>
                         )}
                     </span>

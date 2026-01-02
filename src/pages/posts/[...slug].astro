@@ -15,15 +15,15 @@ export async function getStaticPaths() {
 const { post } = Astro.props;
 const { Content } = await post.render();
 
-const publishDate = post.data.publishDate;
-const publishMonth = publishDate.toLocaleString('en-GB', { month: 'long' });
-const publishDay = publishDate.getDate();
-const publishYear = publishDate.getFullYear();
+const createdAt = post.data.created_at;
+const createdMonth = createdAt.toLocaleString('en-GB', { month: 'long' });
+const createdDay = createdAt.getDate();
+const createdYear = createdAt.getFullYear();
 
-const updatedDate = post.data.updatedAt;
-const updatedMonth = updatedDate?.toLocaleString('en-GB', { month: 'long' });
-const updatedDay = updatedDate?.getDate();
-const updatedYear = updatedDate?.getFullYear();
+const updatedAt = post.data.updated_at;
+const updatedMonth = updatedAt?.toLocaleString('en-GB', { month: 'long' });
+const updatedDay = updatedAt?.getDate();
+const updatedYear = updatedAt?.getFullYear();
 ---
 
 <Layout title={`${post.data.title} | Henry Percy`} description={post.data.description}>
@@ -32,11 +32,11 @@ const updatedYear = updatedDate?.getFullYear();
       <div>
         <h1 transition:name={`post-title-${post.slug}`} class="!mb-2">{post.data.title}</h1>
         <div>
-          <p class="!mt-0 mb-6 text-stone-400">{`${publishMonth}, ${publishDay} ${publishYear}`}</p>
+          <p class="!mt-0 mb-6 text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`}</p>
         </div>
       </div>
       <Content />
-      { updatedDate && 
+      { updatedAt && 
         <footer class="border-stone-200 dark:border-stone-800 pt-8">
           <p class="text-stone-500 dark:text-stone-400 text-sm">
             Last updated {updatedMonth} {updatedDay}, {updatedYear}
