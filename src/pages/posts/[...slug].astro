@@ -14,11 +14,9 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content } = await post.render();
+const { Content, headings } = await post.render();
 ---
 
 <Layout title={`${post.data.title} | Henry Percy`} description={post.data.description}>
-  <main class="relative">
-    <Article article={{ ...post.data, slug: post.slug }} Content={Content} />
-  </main>
+  <Article article={{ ...post.data, slug: post.slug }} Content={Content} headings={headings} />  
 </Layout>

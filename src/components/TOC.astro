@@ -1,0 +1,54 @@
+---
+import type { MarkdownHeading } from 'astro';
+
+interface Props {
+    headings: MarkdownHeading[];
+}
+
+const { headings } = Astro.props;
+
+type Heading = {
+    slug: string;
+    text: string;
+}
+
+type Level2Heading = {
+    slug: string;
+    text: string;
+    subheadings: Heading[];
+}
+
+const tocHeadings: Level2Heading[] = [];
+
+for (const heading of headings) {
+    if (heading.depth === 2) {
+        tocHeadings.push({
+            slug: heading.slug,
+            text: heading.text,
+            subheadings: [],
+        });
+    } else if (heading.depth === 3 && tocHeadings.length > 0) {
+        tocHeadings[tocHeadings.length - 1].subheadings.push({
+            slug: heading.slug,
+            text: heading.text,
+        });
+    }
+}
+---
+
+<ol class="list-none p-0 m-0 prose prose-stone dark:prose-invert">
+    {tocHeadings.map(heading => (
+        <li class="p-0 m-0">
+            <a href={`#${heading.slug}`} class="no-underline hover:underline">{heading.text}</a>
+            {heading.subheadings.length > 0 && (
+                <ol class="list-none p-0 m-0 pl-4">
+                    {heading.subheadings.map(subheading => (
+                        <li class="p-0 m-0">
+                            <a href={`#${subheading.slug}`} class="no-underline hover:underline">{subheading.text}</a>
+                        </li>
+                    ))}
+                </ol>
+            )}
+        </li>
+    ))}
+</ol>

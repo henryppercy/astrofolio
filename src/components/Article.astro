@@ -1,5 +1,7 @@
 ---
 import { z } from "astro/zod";
+import type { MarkdownHeading } from "astro";
+
 import { articleStyleSchema } from "../content/config";
 
 import H2 from "./headings/H2.astro";
@@ -8,12 +10,15 @@ import H4 from "./headings/H4.astro";
 import H5 from "./headings/H5.astro";
 import H6 from "./headings/H6.astro";
 
+import TOC from "./TOC.astro";
+
 export interface ArticleProps {
     article: z.infer<typeof articleStyleSchema> & { slug: string };
+    headings: MarkdownHeading[];
     Content: any;
 }
 
-const { article, Content } = Astro.props as ArticleProps;
+const { article, Content, headings } = Astro.props as ArticleProps;
 
 const components = { h2: H2, h3: H3, h4: H4, h5: H5, h6: H6 };
 
@@ -28,19 +33,27 @@ const updatedDay = updatedAt?.getDate();
 const updatedYear = updatedAt?.getFullYear();
 ---
 
-<article class="space-y-5 prose prose-stone dark:prose-invert min-w-full">
-    <div>
+<div class="max-w-3xl mx-auto prose prose-stone dark:prose-invert">
     <h1 transition:name={`article-title-${article.slug}`} class="!mb-2">{article.title}</h1>
     <div>
         <p class="!mt-0 mb-6 text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`}</p>
     </div>
-    </div>
-    <Content components={components} />
-    { updatedAt && 
-        <footer class="border-stone-200 dark:border-stone-800 pt-8">
-            <p class="text-stone-500 dark:text-stone-400 text-sm">
-                Last updated {updatedMonth} {updatedDay}, {updatedYear}
-            </p>
-        </footer>
-    }
-</article>
+</div>
+<div class="max-xl:max-w-3xl max-xl:mx-auto xl:grid xl:grid-cols-[1fr_48rem_1fr]">
+    <div class="hidden xl:block"></div>
+    <main class="space-y-6">
+        <article class="space-y-5 prose prose-stone dark:prose-invert min-w-full">
+            <Content components={components} />
+            { updatedAt && 
+                <footer class="border-stone-200 dark:border-stone-800 pt-8">
+                    <p class="text-stone-500 dark:text-stone-400 text-sm">
+                        Last updated {updatedMonth} {updatedDay}, {updatedYear}
+                    </p>
+                </footer>
+            }
+        </article>      
+    </main>
+    <aside class="hidden xl:block sticky top-8 self-start ml-10 pl-4 border-l border-l-neutral-400 dark:border-l-neutral-500">
+        <TOC headings={headings} />
+    </aside>
+</div>
