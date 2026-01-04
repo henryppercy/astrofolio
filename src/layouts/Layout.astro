@@ -12,7 +12,7 @@ const fistPathVar = path.split('/').filter(Boolean)[0];
 ---
 
 <!doctype html>
-<html lang="en" class="dark" data-theme="vitesse-dark">
+<html lang="en" class="dark scroll-smooth" data-theme="vitesse-dark">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="description" content={description} />
@@ -23,7 +23,7 @@ const fistPathVar = path.split('/').filter(Boolean)[0];
 		<ClientRouter />
 	</head>
 	<body class="transition-all bg-white dark:bg-black min-h-screen min-w-screen px-4">
-		<header class="max-w-3xl mx-auto py-14 md:pb-20 text-stone-700 dark:text-stone-200">
+		<header id="top" class="max-w-3xl mx-auto py-14 md:pb-20 text-stone-700 dark:text-stone-200">
 			<nav class="flex justify-between">
 				<ul class="flex gap-x-4">
 					<li><a class="hover:text-stone-950 hover:dark:text-stone-50" href="/">home</a>{path === '/' && <div transition:name="nav-underline" class="h-px w-full bg-stone-300 dark:bg-stone-700"></div>}</li>
