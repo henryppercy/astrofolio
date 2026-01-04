@@ -11,6 +11,7 @@ import H5 from "./headings/H5.astro";
 import H6 from "./headings/H6.astro";
 
 import TOC from "./TOC.astro";
+import ArticleInfo from "./ArticleInfo.astro";
 
 export interface ArticleProps {
     article: z.infer<typeof articleStyleSchema> & { slug: string };
@@ -33,30 +34,29 @@ const updatedDay = updatedAt?.getDate();
 const updatedYear = updatedAt?.getFullYear();
 ---
 
-<div class="max-w-3xl mx-auto prose prose-stone dark:prose-invert">
+<div class="max-w-3xl mx-auto prose prose-stone dark:prose-invert mb-8">
     <h1 transition:name={`article-title-${article.slug}`} class="!mb-2">{article.title}</h1>
-    <div>
-        <p class="!mt-0 mb-6 text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`}</p>
-    </div>
+    <p class="!mt-0 block xl:hidden text-stone-500 dark:text-stone-400">{`${createdMonth}, ${createdDay} ${createdYear}`} — {article.read_time} min</p>
 </div>
-<div class="max-xl:max-w-3xl max-xl:mx-auto xl:grid xl:grid-cols-[1fr_48rem_1fr]">
-    <div class="hidden xl:block"></div>
-    <main class="space-y-6">
-        <article class="space-y-5 prose prose-stone dark:prose-invert min-w-full">
-            <Content components={components} />
-            { updatedAt && 
-                <footer class="border-stone-200 dark:border-stone-800 pt-8">
-                    <p class="text-stone-500 dark:text-stone-400 text-sm">
-                        Last updated {updatedMonth} {updatedDay}, {updatedYear}
-                    </p>
-                </footer>
-            }
-        </article>      
-    </main>
-    <aside class="hidden xl:block sticky top-8 self-start ml-10 prose prose-stone dark:prose-invert">
+<main class="max-xl:max-w-3xl max-xl:mx-auto xl:grid xl:grid-cols-[1fr_48rem_1fr]">
+    <aside class="hidden xl:flex xl:flex-col xl:items-end sticky top-8 self-start mr-10 text-sm text-stone-500 dark:text-stone-400 pr-4 border-r border-r-neutral-200 dark:border-r-neutral-700">
+        <ArticleInfo article={article} />
+    </aside>
+    <article class="space-y-5 prose prose-stone dark:prose-invert min-w-full">
+        <Content components={components} />
+        { updatedAt && 
+            <footer class="block xl:hidden border-stone-200 dark:border-stone-800 !mt-10">
+                <p class="text-stone-500 dark:text-stone-400 text-sm">
+                    Last updated {updatedMonth} {updatedDay}, {updatedYear}
+                </p>
+            </footer>
+        }
+        </article>     
+    </article>      
+    <aside class="hidden xl:block sticky top-8 self-start ml-10">
         {headings.length > 0 &&
-            <h3 class="text-base font-medium">On This Page</h3>
-            <div class="pl-4 border-l border-l-neutral-400 dark:border-l-neutral-500">
+            <h3 class="font-medium dark:text-white pb-2">On This Page</h3>
+            <div class="pl-4 border-l border-l-neutral-200 dark:border-l-neutral-700 text-stone-700 dark:text-stone-200">
                 <TOC headings={headings} />
             </div>
         }

@@ -1,0 +1,44 @@
+---
+import type { z } from 'astro:content';
+import type { articleStyleSchema } from '../content/config';
+
+interface Props {
+    article: z.infer<typeof articleStyleSchema> & { slug: string };
+}
+
+const { article } = Astro.props;
+
+const createdAt = article.created_at;
+const createdMonth = createdAt.toLocaleString('en-GB', { month: 'long' });
+const createdDay = createdAt.getDate();
+const createdYear = createdAt.getFullYear();
+
+const updatedAt = article.updated_at;
+const updatedMonth = updatedAt?.toLocaleString('en-GB', { month: 'long' });
+const updatedDay = updatedAt?.getDate();
+const updatedYear = updatedAt?.getFullYear();
+---
+
+<div class="space-y-4 text-right">
+    <div>
+        <p class="font-medium text-stone-700 dark:text-stone-300">Published</p>
+        <p>{createdMonth} {createdDay}, {createdYear}</p>
+    </div>
+    {updatedAt && (
+        <div>
+            <p class="font-medium text-stone-700 dark:text-stone-300">Updated</p>
+            <p>{updatedMonth} {updatedDay}, {updatedYear}</p>
+        </div>
+    )}
+    <div>
+        <p class="font-medium text-stone-700 dark:text-stone-300">Location</p>
+        <p>{article.city}, {article.country}</p>
+    </div>
+    {article.read_time && (
+        <div>
+            <p class="font-medium text-stone-700 dark:text-stone-300">Read time</p>
+            <p>{article.read_time} min</p>
+        </div>
+    )}
+    <!-- TODO: add tags? -->
+</div>
