@@ -9,7 +9,7 @@ function formatDate(date: DateTime): string {
 }
 
 function daysBetween(start: DateTime, end: DateTime): number {
-    return Math.round(end.diff(start, 'days').days);
+    return Math.round(end.diff(start, 'days').days) + 1;
 }
 
 function getPace(start: DateTime, end: DateTime, wordCount: number) {
@@ -74,7 +74,7 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                     <>
                         {formatDate(book.data.date_finished)}
                         {book.data.date_started && (
-                            <> ({daysBetween(book.data.date_started, book.data.date_finished)} days)</>
+                            <> ({daysBetween(book.data.date_started, book.data.date_finished)} {daysBetween(book.data.date_started, book.data.date_finished) === 1 ? ' day' : ' days'})</>
                         )}
                     </>
                 ) : '—'}
