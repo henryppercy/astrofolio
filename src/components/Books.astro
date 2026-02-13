@@ -86,7 +86,7 @@ const monthNames = Info.months('long');
 
                             return (
                                 <div class="max-xl:max-w-3xl max-xl:mx-auto xl:grid xl:grid-cols-[1fr_48rem_1fr]">
-                                    <aside class="hidden xl:flex xl:justify-end sticky top-8 pb-8 self-start mr-10 text-sm prose prose-stone pr-4">
+                                    <aside class="hidden xl:flex xl:justify-end sticky top-4 pb-8 pt-8 self-start text-sm prose prose-stone pr-6">
                                         {(monthNames[monthNum - 1]).toUpperCase()}
                                     </aside>
                                     <ul class:list={["divide-y divide-stone-300 dark:divide-stone-700 p-0 prose prose-stone dark:prose-invert min-w-full", monthIndex > 0 && "border-t border-stone-300 dark:border-stone-700"]}>
