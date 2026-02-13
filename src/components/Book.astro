@@ -85,11 +85,6 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                 </dd>
             </dl>
         </div>
-        {false && (
-            <p class="text-sm text-neutral-600 dark:text-neutral-400 m-0">
-                {book.data.headline}
-            </p>
-        )}
         <div class="flex items-center gap-x-2 text-xs/5 text-stone-500 pt-1.5">
             {(book.data.genres.slice(0, 4) as string[]).map((g, index, arr) => (
                 <>
