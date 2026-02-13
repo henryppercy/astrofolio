@@ -1,5 +1,5 @@
 ---
-import { DateTime } from 'luxon';
+import { DateTime, Info } from 'luxon';
 import { getCollection } from 'astro:content';
 
 import Book from './Book.astro';
@@ -11,7 +11,9 @@ type FinishedBook = typeof books[number] & {
 };
 
 type BooksByYear = {
-  [year: number]: FinishedBook[];
+  [year: number]: {
+    [month: number]: FinishedBook[];
+  };
 };
 
 const bookCollection = await getCollection('book');
@@ -33,25 +35,27 @@ const finishedBooks: FinishedBook[] = books.filter(
 const booksByYear: BooksByYear = {};
 
 for (const book of finishedBooks) {
-    if (book.data?.date_finished) {
-        const year = book.data.date_finished.year;
-        if (!booksByYear[year]) booksByYear[year] = [];
-        booksByYear[year].push(book);
-    }
+    const year = book.data.date_finished.year;
+    const month = book.data.date_finished.month;
+    if (!booksByYear[year]) booksByYear[year] = {};
+    if (!booksByYear[year][month]) booksByYear[year][month] = [];
+    booksByYear[year][month].push(book);
 }
+
+const monthNames = Info.months('long');
 ---
 
 <div>
-    {!!currentlyReading?.length && 
-        <div class="col-span-full">
-            <div class="border-b border-stone-200">
+    {!!currentlyReading?.length &&
+        <div class="max-w-3xl mx-auto prose prose-stone dark:prose-invert min-w-0">
+            <div class="border-b border-stone-300">
                 <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
                     <h2 class="mb-0 font-semibold">Currently Reading</h2>
                     <p class="mb-0 truncate text-xs">({currentlyReading.length})</p>
                 </div>
             </div>
             <ul class="divide-y divide-stone-200 dark:divide-stone-700 p-0 -my-2">
-                {currentlyReading.map(book => <Book book={book} />)} 
+                {currentlyReading.map(book => <Book book={book} />)}
             </ul>
         </div>
     }
@@ -59,19 +63,39 @@ for (const book of finishedBooks) {
         Object.keys(booksByYear)
             .sort((a, b) => Number(b) - Number(a))
             .map(year => {
+                const yearNum = Number(year);
+                const totalBooks = Object.values(booksByYear[yearNum])
+                    .reduce((sum, monthBooks) => sum + monthBooks.length, 0);
+                const months = Object.keys(booksByYear[yearNum])
+                    .sort((a, b) => Number(b) - Number(a));
+
                 return (
-                    <div class="col-span-full">
-                        <div class="border-b border-stone-200">
-                            <div class="mb-2 flex flex-wrap gap-x-1 items-baseline">
-                                <h2 class="mb-0 font-semibold">{year}</h2>
-                                <p class="mb-0 truncate text-xs">({booksByYear[Number(year)].length})</p>
+                    <div>
+                        <div class="max-w-3xl mx-auto prose prose-stone dark:prose-invert">
+                            <div class="border-b border-stone-300">
+                                <div class="mb-2 flex flex-wrap gap-x-1 items-baseline mt-8">
+                                    <h2 class="mb-0 font-semibold">{year}</h2>
+                                    <p class="mb-0 truncate text-xs">({totalBooks})</p>
+                                </div>
                             </div>
                         </div>
-                        <ul class="divide-y divide-stone-200 dark:divide-stone-700 p-0 -my-2">
-                            {booksByYear[Number(year)]
-                                .sort((a, b) => b.data.date_finished.toMillis() - a.data.date_finished.toMillis())
-                                .map(book => <Book book={book} />)} 
-                        </ul>
+                        {months.map((month, monthIndex) => {
+                            const monthNum = Number(month);
+                            const monthBooks = booksByYear[yearNum][monthNum]
+                                .sort((a, b) => b.data.date_finished.toMillis() - a.data.date_finished.toMillis());
+
+                            return (
+                                <div class="max-xl:max-w-3xl max-xl:mx-auto xl:grid xl:grid-cols-[1fr_48rem_1fr]">
+                                    <aside class="hidden xl:flex xl:justify-end sticky top-8 pb-8 self-start mr-10 text-sm prose prose-stone pr-4">
+                                        {(monthNames[monthNum - 1]).toUpperCase()}
+                                    </aside>
+                                    <ul class:list={["divide-y divide-stone-300 dark:divide-stone-700 p-0 prose prose-stone dark:prose-invert min-w-full", monthIndex > 0 && "border-t border-stone-300 dark:border-stone-700"]}>
+                                        {monthBooks.map(book => <Book book={book} />)}
+                                    </ul>
+                                    <div class="hidden xl:block"></div>
+                                </div>
+                            );
+                        })}
                     </div>
                 );
             })
