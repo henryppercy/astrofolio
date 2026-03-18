@@ -12,10 +12,10 @@ function daysBetween(start: DateTime, end: DateTime): number {
     return Math.round(end.diff(start, 'days').days) + 1;
 }
 
-function getPace(start: DateTime, end: DateTime, wordCount: number) {
-    if (!start || !end || !wordCount) return null;
+function getPace(start: DateTime, end: DateTime, pageCount: number): number | null {
+    if (!start || !end || !pageCount) return null;
     const days = daysBetween(start, end);
-    return Math.round(wordCount / Math.max(1, days)).toLocaleString();
+    return Math.round(pageCount / Math.max(1, days));
 }
 ---
 
@@ -34,16 +34,19 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                     <h3 class="font-bold flex gap-x-2 items-baseline text-pretty m-0">
                         {book.data.title}
                     </h3>
-                    <p class="text-sm">
-                        {book.data.authors.join(', ')}
-                        {book.data.translators?.length > 0 && (
-                            <span class="ml-2 text-xs text-neutral-500">
-                                ({book.data.translators.length > 1 ? 'Translators' : 'Translator'}: {book.data.translators.join(', ')})
-                            </span>
-                        )}
+                    <p class="text-sm m-0">
+                        {book.data.author}
                     </p>
+                    {book.data.headline && (
+                        <p class="text-xs text-neutral-500 m-0 mt-1 italic">{book.data.headline}</p>
+                    )}
+                    {book.data.series && (
+                        <p class="text-xs text-neutral-500 m-0 mt-1">
+                            {book.data.series}{book.data.series_pos ? ` #${book.data.series_pos}` : ''}
+                        </p>
+                    )}
                 </div>
-                {book.data.rating && 
+                {book.data.rating &&
                     <div class="mt-1">
                         <Badge
                             color={
@@ -70,30 +73,40 @@ function getPace(start: DateTime, end: DateTime, wordCount: number) {
                         <>
                             {formatDate(book.data.date_finished)}
                             {book.data.date_started && (
-                                <> ({daysBetween(book.data.date_started, book.data.date_finished)} {daysBetween(book.data.date_started, book.data.date_finished) === 1 ? ' day' : ' days'})</>
+                                <span class="text-neutral-500"> ({daysBetween(book.data.date_started, book.data.date_finished)} {daysBetween(book.data.date_started, book.data.date_finished) === 1 ? ' day' : ' days'})</span>
                             )}
                         </>
                     ) : '—'}
                 </dd>
-                <dt class="m-0 font-semibold">Release date</dt>
+                <dt class="m-0 font-semibold">Release Date</dt>
                 <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
                     {book.data.date_published ? formatDate(book.data.date_published) : '—'}
                 </dd>
-                <dt class="m-0 font-semibold">Word count</dt>
+                {book.data.page_count > 0 && (
+                    <>
+                        <dt class="m-0 font-semibold">Pages</dt>
+                        <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
+                            {book.data.page_count.toLocaleString()}
+                            {book.data.date_finished && getPace(book.data.date_started, book.data.date_finished, book.data.page_count) && (
+                                <span class="text-neutral-500"> ({getPace(book.data.date_started, book.data.date_finished, book.data.page_count)} pages per day)</span>
+                            )}
+                        </dd>
+                    </>
+                )}
+                <dt class="m-0 font-semibold">Format</dt>
                 <dd class="m-0 tabular-nums text-neutral-600 dark:text-neutral-400 not-prose">
-                    {book.data.word_count ? book.data.word_count.toLocaleString() : '—'} {book.data.date_finished && <span>({getPace(book.data.date_started, book.data.date_finished, book.data.word_count) ? `${getPace(book.data.date_started, book.data.date_finished, book.data.word_count)} words per day` : '—'})</span>}
+                    {book.data.format || '—'}
                 </dd>
             </dl>
         </div>
         <div class="flex items-center gap-x-2 text-xs/5 text-stone-500 pt-1.5">
-            {(book.data.genres.slice(0, 4) as string[]).map((g, index, arr) => (
+            <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{book.data.genre}</p>
+            {book.data.tags?.length > 0 && book.data.tags.slice(0, 3).map((tag: string) => (
                 <>
-                    <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{g}</p>
-                    {index < arr.length - 1 && (
-                        <svg viewBox="0 0 2 2" class="size-0.5 fill-current">
-                            <circle cx="1" cy="1" r="1" />
-                        </svg>
-                    )}
+                    <svg viewBox="0 0 2 2" class="size-0.5 fill-current">
+                        <circle cx="1" cy="1" r="1" />
+                    </svg>
+                    <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{tag}</p>
                 </>
             ))}
         </div>

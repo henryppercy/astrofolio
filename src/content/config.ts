@@ -67,20 +67,23 @@ const job = defineCollection({
 const book = defineCollection({
   type: 'content',
   schema: z.object({
-    authors: z.array(z.string()),
+    author: z.string(),
     title: z.string(),
     headline: z.string(),
+    series: z.string(),
+    series_pos: z.number().nullable(),
     image_url: z.string(),
-    date_published: z.date(),
-    date_started: z.date(),
-    date_finished: z.date().nullable(),
+    date_published: z.coerce.date(),
+    date_started: z.coerce.date(),
+    date_finished: z.coerce.date().nullable(),
     rating: z.number().nullable(),
-    genres: z.array(z.string()),
+    type: z.enum(["fiction", "non-fiction"]),
+    genre: z.string(),
+    tags: z.array(z.string()),
     format: z.string(),
     language: z.string(),
     original_language: z.string(),
-    translators: z.array(z.string()).nullable(),
-    word_count: z.number(),
+    page_count: z.number().nullable(),
   })
 });
 
