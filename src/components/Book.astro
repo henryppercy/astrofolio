@@ -101,7 +101,7 @@ function getPace(start: DateTime, end: DateTime, pageCount: number): number | nu
         </div>
         <div class="flex items-center gap-x-2 text-xs/5 text-stone-500 pt-1.5">
             <p class="m-0 overflow-hidden whitespace-nowrap text-xs/5 text-stone-500 not-prose">{book.data.genre}</p>
-            {book.data.tags?.length > 0 && book.data.tags.slice(0, 3).map((tag: string) => (
+            {book.data.tags?.length > 0 && book.data.tags.slice(0, 4).map((tag: string) => (
                 <>
                     <svg viewBox="0 0 2 2" class="size-0.5 fill-current">
                         <circle cx="1" cy="1" r="1" />
