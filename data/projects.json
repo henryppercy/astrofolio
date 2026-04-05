@@ -1,2 +1,5 @@
 [
+    { "name": "savings-calc", "date": "2026-01-03" },
+    { "name": "note-templater", "date": "2026-02-15" },
+    { "name": "book-log-cli", "date": "2026-03-22" }
 ]
