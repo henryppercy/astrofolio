@@ -39,9 +39,9 @@ const readThisYear = books.filter((book) => {
             <ul class="not-prose space-y-3">
                 {recent.map(book => (
                     <li class="text-sm">
-                        <span class="text-neutral-500 dark:text-neutral-400">{book.data.author}</span>
-                        <span class="mx-1.5 text-neutral-400 dark:text-neutral-600">—</span>
                         <span class="italic">{book.data.title}</span>
+                        <span class="mx-1.5 text-neutral-400 dark:text-neutral-600">—</span>
+                        <span class="text-neutral-500 dark:text-neutral-400">{book.data.author}</span>
                         {book.data.rating && (
                             <span class="ml-2 text-neutral-400 dark:text-neutral-600 tabular-nums text-xs">{book.data.rating}/5</span>
                         )}
