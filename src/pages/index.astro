@@ -12,8 +12,8 @@ const books = await getCollection('book');
 const recent = books
     .filter(book => !!book.data.date_finished)
     .toSorted((a, b) => 
-        DateTime.fromJSDate(b.data.date_finished).toMillis() - 
-        DateTime.fromJSDate(a.data.date_finished).toMillis()
+        DateTime.fromJSDate(b.data.date_finished!).toMillis() - 
+        DateTime.fromJSDate(a.data.date_finished!).toMillis()
     )
     .slice(0, 5);
 
