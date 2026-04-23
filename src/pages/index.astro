@@ -1,17 +1,61 @@
 ---
+import { DateTime } from 'luxon';
 import Layout from '../layouts/Layout.astro';
-import JobSummary from '../components/JobSummary.astro';
 
 export const prerender = true;
 
 import { getCollection } from 'astro:content';
+
 const posts = await getCollection('post');
+const books = await getCollection('book');
+
+const recent = books
+    .filter(book => !!book.data.date_finished)
+    .toSorted((a, b) => 
+        DateTime.fromJSDate(b.data.date_finished!).toMillis() - 
+        DateTime.fromJSDate(a.data.date_finished!).toMillis()
+    )
+    .slice(0, 5);
+
+const currentlyReading = books.filter(book => !book.data.date_finished)[0];
+const now = DateTime.now();
+
+const readThisYear = books.filter((book) => {
+    if (book.data.date_finished) {
+        return DateTime.fromJSDate(book.data.date_finished).year == now.year;
+    }
+});
 ---
 
 <Layout title="Henry Percy">
 	<main class="space-y-5 prose prose-stone dark:prose-invert max-w-3xl mx-auto">
 		<h1 class="mb-4 text-3xl font-bold leading-none tracking-tight md:text-4xl">Henry</h1>
-		<p>Hey, I'm a <span class="text-black dark:text-white font-semibold">Software Developer</span> based in <span class="text-black dark:text-white font-semibold">London</span>. This site is a place for my notes, ideas, and the occasional project.</p>
+        <p>Hey, I'm a <span class="font-semibold">Software Developer</span> based in <span class="font-semibold">London</span>. On this site I like to write about life, track my Spanish learning progress, and log what I'm reading.</p>
+        <section>
+            <h2>Reading</h2>
+            <p>
+                I've been reading more and more over the past few years and so far this year I've read <span class="font-semibold">{ readThisYear.length }</span> book{ readThisYear.length !== 1 ? 's' : '' }. Most recently I've read:
+            </p>
+            <ul class="not-prose space-y-3">
+                {recent.map(book => (
+                    <li class="text-sm">
+                        <span class="italic">{book.data.title}</span>
+                        <span class="mx-1.5 text-neutral-400 dark:text-neutral-600">—</span>
+                        <span class="text-neutral-500 dark:text-neutral-400">{book.data.author}</span>
+                        {book.data.rating && (
+                            <span class="ml-2 text-neutral-400 dark:text-neutral-600 tabular-nums text-xs">{book.data.rating}/5</span>
+                        )}
+                    </li>
+                ))}
+                <li>
+                    <a href="/books" class="group inline-flex items-center gap-1.5 font-medium text-sm hover:text-stone-900 hover:dark:text-stone-50 transition-colors">
+                        See full reading list
+                        <span class="transition-transform group-hover:translate-x-0.5">→</span>
+                    </a>
+                </li>
+            </ul>
+            <p>{currentlyReading ? <> I'm currently reading <span class="font-semibold italic">{ currentlyReading.data.title }</span> by <span class="font-semibold">{ currentlyReading.data.author }</span>.</> : ''}</p>
+        </section>
 
 		<section>
 			<h2>Writing</h2>
@@ -32,12 +76,13 @@ const posts = await getCollection('post');
 						</li>
 					)
 				)}
+                <li>
+                    <a href="/posts" class="group inline-flex items-center gap-1.5 font-medium text-sm hover:text-stone-900 hover:dark:text-stone-50 transition-colors">
+                        See all posts
+                        <span class="transition-transform group-hover:translate-x-0.5">→</span>
+                    </a>
+                </li>
 			</ul>
-		</section>
-
-		<section>
-			<h2>Work</h2>
-			<JobSummary />
 		</section>
 	</main>
 </Layout>
